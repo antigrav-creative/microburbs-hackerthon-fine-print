@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="Fine Print logo">
+  <rect width="128" height="128" rx="30" fill="#1E1D1B"/>
+  <g transform="translate(32 30) scale(6)" fill="none" stroke="#FBFAF6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M2 9.5V2.5h8M2 6h5"/>
+  </g>
+  <circle cx="96" cy="94" r="8" fill="#2F64D9"/>
+</svg>

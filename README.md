@@ -1,6 +1,8 @@
 <div align="center">
 
-# 🔎 Fine Print
+<img src="assets/logo.svg" alt="Fine Print logo" width="96" height="96">
+
+# Fine Print
 
 ### Read it before you buy it.
 
