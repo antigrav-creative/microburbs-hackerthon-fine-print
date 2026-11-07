@@ -4,7 +4,7 @@ Two parts: a **45-second team pitch** (just us talking, no screen) and a **short
 
 ---
 
-**Recorded:** [`45s.mp4`](45s.mp4) (39 s).
+**Recorded:** pitch [`45s.mp4`](45s.mp4) (39 s) · demo [`demo.mp4`](demo.mp4) (2 min 17 s).
 
 ## Part 1 · 45-second pitch (~120 words)
 

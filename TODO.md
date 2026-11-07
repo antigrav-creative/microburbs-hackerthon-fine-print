@@ -26,7 +26,7 @@ Hand-in closes **15:00** (freeze ~14:30). Team key + CSVs arrived **11:00**.
 - [x] 🟢 **Competitor scan + market research** — `research.md` (backup folder): competitors, market size, Reddit evidence
 - [x] 🟢 **Pitch** — 45s team pitch + ~90s demo + business case (`pitch/PITCH.md`); 9-slide deck (Claude artifact, share before sending)
 - [ ] 🔑 **Live check before freeze** — reload, F on a real REA listing, ask a question that draws a card (streaming + scroll), Domain + Waterloo example
-- [ ] 🔑 **Demo recording** — `demo.mp4` on real REA + Domain listings, incl. their Waterloo example
+- [x] 🔑 **Demo recording** — `pitch/demo.mp4` (2 min 17 s) · pitch `pitch/45s.mp4` (39 s)
 - [ ] 🟢 **Judge package** — submit `fine-print-extension.zip` PRIVATELY (contains supplied data; never a public release); decide keys: judges' own vs a spend-capped OpenRouter key in the notes
 - [ ] 🟢 **report.html** — what buyers see today → our added value → why these facts → data handling (Microburbs = source of truth, supplied CSVs not republished)
 - [ ] 🔑 **Report numbers** — address-match accuracy, final screenshots
