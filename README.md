@@ -116,7 +116,7 @@ More detail on the agent runtime and code layout: [`extension/README.md`](extens
 
 - **Microburbs is the source of truth** for every figure: valuation, agency quoting record, rentals, sales, development applications, market and hazards. Calculations (yield, weekly cost, supply timing) are done in code, never by the model.
 - **Supplied hackathon files are not republished.** The public-housing CSV is turned into a small lookup at build time (`npm run prepare:public-housing`). It's git-ignored and ships only inside the built extension. Without it, everything works except the public housing flag.
-- **Our own rent model** (LightGBM + CatBoost, trained on City of Sydney leases to 31 Jul 2026; median error ~$44/wk, 79% within $100) is the one figure not from Microburbs, and it's labelled "our rent model" wherever it appears. Its predictions for 65,777 City of Sydney apartments (with and without a car space) are bundled the same way (`npm run prepare:rent-model`, git-ignored). When it covers the apartment, its rent drives yield and weekly cost; otherwise the nearby-rentals median does.
+- **Our own rent model** (LightGBM + CatBoost, trained on City of Sydney leases to 31 Jul 2026; typical miss **$42/wk** on a sealed Jun–Jul 2026 test vs $86 for the Microburbs benchmark, 80.8% within $100; [full report](docs/rent-model-report.html)) is the one figure not from Microburbs, and it's labelled "our rent model" wherever it appears. Its predictions for 65,777 City of Sydney apartments (with and without a car space) are bundled the same way (`npm run prepare:rent-model`, git-ignored). When it covers the apartment, its rent drives yield and weekly cost; otherwise the nearby-rentals median does.
 - **Nothing leaves your browser** except calls to Microburbs and OpenRouter. Your brief, keys, shortlist and saved properties are stored locally.
 - Supply timing is an estimate (lodgement + approval + build time by size, ±1 year) and is labelled as one. General information, not financial advice.
 
@@ -127,6 +127,7 @@ More detail on the agent runtime and code layout: [`extension/README.md`](extens
 | `extension/` | The Chrome extension (MV3): panel, agent, shortlist, settings |
 | `address-pipeline/` | Address parsing and exact GNAF matching |
 | `pitch/` | Pitch script, demo run order, business case |
+| `docs/` | [Rent model report](docs/rent-model-report.html) (Task 4): method, validation, what drives the prediction |
 | `design/` | Design references |
 
 ---

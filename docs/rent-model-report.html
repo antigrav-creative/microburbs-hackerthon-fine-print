@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en" style="color-scheme:light"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FinePrintPredictions | City of Sydney flat rents | report</title>
+<style>
+:root{color-scheme:light;
+--surface:#fbfcfc;--ink:#10201e;--ink2:#435652;--muted:#5f716d;--line:#dbe6e3;--grid:#e6eeec;--card:#f0f6f5;
+--accent:#0f766e;--accent-ink:#0b5d56;--hero1:#0b3a36;--hero2:#0f766e;--on-hero:#0b2b28;--on-hero2:#3d5551;
+--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--gray:#c9c7c0;--hl:#fff6e0;--hlb:#d9a400;
+--obs:#e8f0fb;--obsb:#2a78d6;--hyp:#fdeee6;--hypb:#eb6834;--prv:#e3f5ed;--prvb:#138a5f;
+--serif:"Iowan Old Style","Palatino Linotype","Book Antiqua",Palatino,Georgia,serif;
+--sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+--r:12px;--shadow:0 1px 2px rgba(16,32,30,.06),0 4px 14px rgba(16,32,30,.05)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:1.2rem}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+body{margin:0;background:var(--surface);color:var(--ink);font:16.5px/1.65 var(--sans);-webkit-font-smoothing:antialiased}
+.skip{position:absolute;left:-999px;top:8px;background:var(--accent);color:#fff;padding:8px 14px;border-radius:8px;z-index:20}
+.skip:focus{left:12px}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:4px}
+a{color:var(--accent-ink);text-underline-offset:3px;text-decoration-thickness:1px}
+a:hover{text-decoration-thickness:2px}
+.hero{background:linear-gradient(135deg,var(--hero1) 0%,var(--hero2) 100%);color:var(--on-hero)}
+.hero-in{max-width:1040px;margin:0 auto;padding:3.4rem 1.4rem 2.6rem}
+.hero small{display:block;color:var(--on-hero2);font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600}
+.hero small b{color:var(--on-hero)}
+.hero h1{font-family:var(--serif);font-weight:600;font-size:clamp(2rem,4.6vw,3.25rem);line-height:1.12;letter-spacing:-.01em;margin:.7rem 0 1rem;max-width:24ch}
+.hero .sub{color:var(--on-hero2);font-size:1.12rem;max-width:64ch;margin:0}
+.hero .sub b{color:var(--on-hero)}
+.hero .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:2.2rem 0 0}
+.hero .kpi{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:var(--r);padding:16px 18px}
+.hero .kpi:first-child{background:#ffffff;border-color:#ffffff}
+.hero .kpi:first-child b{color:#0b3a36}.hero .kpi:first-child span{color:#3a5652}
+.hero .kpi b{display:block;font-family:var(--serif);font-size:2.2rem;line-height:1.1;font-weight:600;font-variant-numeric:tabular-nums;color:var(--on-hero)}
+.hero .kpi span{display:block;color:var(--on-hero2);font-size:.86rem;line-height:1.4;margin-top:.35rem}
+main{max-width:860px;margin:0 auto;padding:2.4rem 1.4rem 4rem}
+h2{font-family:var(--serif);font-weight:600;font-size:1.75rem;line-height:1.2;margin:3.4rem 0 .8rem;padding-top:1.2rem;border-top:1px solid var(--line);letter-spacing:-.005em}
+h2 .n{color:var(--accent);margin-right:.5rem}
+h3{font-size:1.06rem;margin:1.7rem 0 .35rem}
+p,li{max-width:72ch}
+.sub{color:var(--ink2);font-size:1.05rem}
+small,.muted{color:var(--muted)}
+nav.toc{background:var(--card);border-radius:var(--r);padding:14px 18px;margin:0 0 1.6rem;font-size:.92rem;border:1px solid var(--line)}
+nav.toc > b{display:block;font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem}
+nav.toc ol{margin:.2rem 0;padding-left:1.4rem;columns:2;column-gap:2rem}
+nav.toc li{margin:.18rem 0;max-width:none}
+nav.toc a{color:var(--ink2);text-decoration:none;display:inline-block;padding:2px 0}
+nav.toc a:hover{color:var(--accent-ink)}
+nav.toc a.active{color:var(--accent-ink);font-weight:650}
+@media(max-width:700px){nav.toc ol{columns:1}}
+@media(min-width:1400px){
+ nav.toc{position:fixed;top:2rem;left:calc(50% - 430px - 270px);width:240px;max-height:calc(100vh - 4rem);overflow:auto;margin:0;background:transparent;border:0;padding:0 0 0 2px;transition:opacity .2s ease}
+ nav.toc ol{columns:1;padding-left:0;list-style:none;border-left:2px solid var(--line)}
+ nav.toc li{margin:0}
+ nav.toc a{padding:5px 0 5px 14px;margin-left:-2px;border-left:2px solid transparent}
+ nav.toc a.active{border-left-color:var(--accent)}
+ body.at-top nav.toc{opacity:0;pointer-events:none}
+}
+.note{background:var(--hl);border-left:4px solid var(--hlb);padding:.85rem 1.1rem;border-radius:0 var(--r) var(--r) 0;margin:1.4rem 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 18px;box-shadow:var(--shadow)}
+.card h3{margin-top:.2rem}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:700px){.grid2{grid-template-columns:1fr}}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}@media(max-width:760px){.grid3{grid-template-columns:1fr}}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:1.4rem 0}
+.kpi{background:var(--card);border-radius:var(--r);padding:14px 16px}
+.kpi b{display:block;font-size:1.9rem;line-height:1.15;font-weight:650;font-variant-numeric:tabular-nums}
+.kpi span{color:var(--ink2);font-size:.9rem;display:block}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.93rem}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:first-child th{border-bottom:2px solid var(--accent)}
+th{color:var(--ink2);font-weight:650;font-size:.8rem;letter-spacing:.05em;text-transform:uppercase}
+tr:hover td{background:var(--card)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.em td{font-weight:650;background:var(--card)}
+.tag{display:inline-block;font-size:.66rem;font-weight:700;letter-spacing:.06em;padding:1px 8px;border-radius:999px;margin-left:5px;vertical-align:2px;border:1px solid;color:var(--ink)}
+.t-obs{background:var(--obs);border-color:var(--obsb)}
+.t-hyp{background:var(--hyp);border-color:var(--hypb)}
+.t-prv{background:var(--prv);border-color:var(--prvb)}
+.insights{padding-left:1.2rem}
+.insights li{margin:.75rem 0;padding-left:.2rem}
+.insights li::marker{color:var(--accent)}
+dl.gloss{display:grid;grid-template-columns:max-content 1fr;gap:.45rem 1.2rem;margin:.8rem 0}
+dl.gloss dt{font-weight:650}dl.gloss dd{margin:0;color:var(--ink)}
+@media(max-width:640px){dl.gloss{grid-template-columns:1fr}dl.gloss dd{margin-bottom:.5rem}}
+figure{margin:1.6rem 0;padding:16px 18px 10px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow)}
+figcaption{color:var(--ink2);font-size:.92rem;margin-bottom:.5rem;font-weight:500}
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:.88rem;color:var(--ink2);margin:.2rem 0 .3rem}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.legend i.ln{height:3px;width:16px;border-radius:2px;vertical-align:3px}
+#tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--surface);padding:7px 11px;border-radius:8px;font-size:.85rem;opacity:0;transition:opacity .12s ease;z-index:9;max-width:320px;box-shadow:0 6px 20px rgba(0,0,0,.18)}
+#tip b{font-size:1rem}
+details{margin:.5rem 0}summary{cursor:pointer;color:var(--accent-ink);font-size:.9rem;font-weight:550}
+svg text{font-family:var(--sans)}
+code,pre{font-family:ui-monospace,"Cascadia Code",Consolas,monospace;font-size:.86rem}
+code{background:var(--card);padding:1px 5px;border-radius:5px;overflow-wrap:anywhere}
+pre{background:var(--hero1);color:#e6f4f1;border-radius:var(--r);padding:16px 18px;overflow-x:auto;line-height:1.6}
+pre code{background:none;padding:0;color:inherit}
+.hit{cursor:default}.hit:hover + .mk,.mk.on{opacity:.8}
+@media(max-width:640px){table{display:block;overflow-x:auto}.hero .kpi b{font-size:1.7rem}.hero-in{padding:2.4rem 1.1rem 2rem}}
+footer{margin-top:3.4rem;border-top:1px solid var(--line);padding-top:1.1rem}
+@media print{.hero{background:none;color:#000}.hero *{color:#000!important}.hero .kpi{border-color:#999}nav.toc,.skip{display:none}figure{box-shadow:none;break-inside:avoid}pre{background:#f3f3f3;color:#000}}
+svg{max-width:100%;height:auto}img{max-width:100%}figure{overflow-x:auto}main,.hero-in{min-width:0}main>*{max-width:100%}pre{white-space:pre-wrap;word-break:break-word}
+
+.hero{background:radial-gradient(1200px 500px at 85% -10%,#ccfbf1 0%,rgba(204,251,241,0) 60%),linear-gradient(180deg,#f0fdfa 0%,#fbfcfc 100%);color:var(--on-hero);border-bottom:1px solid var(--line)}
+.hero small{color:var(--accent)!important}
+.hero small b{color:var(--on-hero)!important}
+.hero h1{color:#0b2b28}
+.hero .sub{color:var(--on-hero2)}
+.hero .sub b{color:#0b2b28}
+.hero .kpi{background:#ffffff;border:1px solid var(--line);box-shadow:var(--shadow)}
+.hero .kpi b{color:#0b2b28}
+.hero .kpi span{color:var(--ink2)}
+.hero .kpi:first-child{background:var(--accent);border-color:var(--accent)}
+.hero .kpi:first-child b{color:#ffffff}.hero .kpi:first-child span{color:#d7f5f0}
+.vs{margin:2rem 0 0;background:#ffffff;border:1px solid var(--line);border-radius:var(--r);padding:18px 20px 14px;box-shadow:var(--shadow);max-width:780px}
+.vs h2{all:unset;display:block;font-family:var(--serif);font-size:1.25rem;font-weight:600;color:#0b2b28;margin-bottom:.8rem}
+.vs .row{display:grid;grid-template-columns:210px 1fr 70px;align-items:center;gap:12px;margin:.5rem 0}
+.vs .lbl{font-size:.92rem;color:var(--ink2)} .vs .lbl b{color:#0b2b28}
+.vs .track{height:22px;background:var(--grid);border-radius:6px;overflow:hidden}
+.vs .bar{height:100%;border-radius:6px}
+.vs .us{background:var(--accent)} .vs .them{background:#9aa9a6}
+.vs .val{font-family:var(--serif);font-size:1.25rem;font-weight:600;text-align:right;font-variant-numeric:tabular-nums;color:#0b2b28}
+.vs .foot{font-size:.86rem;color:var(--muted);margin-top:.5rem}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:1.3rem 0 0;padding:0;list-style:none}
+.badges li{display:inline-flex;align-items:center;gap:7px;background:#ffffff;border:1px solid var(--line);border-radius:999px;padding:5px 12px 5px 9px;font-size:.84rem;color:var(--ink2);max-width:none}
+.badges svg{flex:none;color:var(--accent)}
+@media(max-width:560px){.vs .row{grid-template-columns:1fr 64px}.vs .lbl{grid-column:1/-1}}
+@media print{.vs,.badges li{box-shadow:none}}
+</style></head>
+<body class="at-top"><a class="skip" href="#content">Skip to the report</a>
+<header class="hero"><div class="hero-in">
+<small>Team <b>FinePrintPredictions</b> · Microburbs hackathon · City of Sydney flat rents · written 7 Nov 2026 · data cutoff 31 Jul 2026</small>
+<h1>Predicting the weekly rent of every City of Sydney flat, with and without a car space</h1>
+<p class="sub">We priced all 65,777 flats twice. On a sealed set of 2,592 Jun–Jul 2026 adverts that the model had never seen, the typical miss was <b>$42 a week</b>. The Microburbs benchmark misses by <b>$86</b>. We used only the three supplied data files.</p>
+
+<section class="vs" aria-label="Our error versus the benchmark">
+<h2>Typical miss per flat, per week (lower is better)</h2>
+<div class="row"><span class="lbl"><b>Our model</b><br>sealed Jun–Jul 2026 test</span><div class="track"><div class="bar us" style="width:48.8%"></div></div><span class="val">$42</span></div>
+<div class="row"><span class="lbl"><b>Microburbs valuation</b><br>benchmark, Aug–Sep 2026</span><div class="track"><div class="bar them" style="width:100%"></div></div><span class="val">$86</span></div>
+<p class="foot">About half the benchmark's typical error. 80.8% of our guesses land within $100, vs 55.2% for the benchmark. Different adverts, so a rough comparison: the official score uses Aug–Sep adverts we never see.</p>
+</section>
+<ul class="badges" aria-label="How the result was protected">
+<li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Sealed test, opened once</li>
+<li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Nothing dated after 31 Jul 2026</li>
+<li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>All 65,777 flats priced, no blanks</li>
+<li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Only the 3 supplied files</li>
+</ul>
+<div class="kpis">
+  <div class="kpi"><b>$42.0</b><span>typical miss (median error) on the sealed Jun–Jul 2026 test</span></div>
+  <div class="kpi"><b>80.8%</b><span>of those predictions within $100 (benchmark 55.2%)</span></div>
+  <div class="kpi"><b>0.892</b><span>R² on the sealed test</span></div>
+  <div class="kpi"><b>$43.58</b><span>practice-exam average (3 earlier windows, ± $0.72)</span></div>
+  <div class="kpi"><b>65,777</b><span>flats priced, 2 prices each, no blanks</span></div>
+</div>
+</div></header>
+<main id="content">
+<div class="note"><b>How to read the tags.</b>
+<span class="tag t-obs">OBSERVED</span> a number we measured from the data.
+<span class="tag t-prv">PROVEN</span> tested by a logged run or a check that could have failed.
+<span class="tag t-hyp">HYPOTHESIS</span> our best explanation or guess, not tested.
+Every number comes from <code>experiments/runs.jsonl</code>, <code>models/chosen.json</code>, <code>experiments/DECISIONS.md</code> or <code>reports/data_quality.md</code>.</div>
+
+<nav class="toc"><b>Contents</b>
+<ol>
+<li><a href="#insights">Key insights</a></li>
+<li><a href="#problem">The problem, in plain words</a></li>
+<li><a href="#data">Data sources</a></li>
+<li><a href="#split">The date split</a></li>
+<li><a href="#method">Methodology</a></li>
+<li><a href="#results">Results and validation score</a></li>
+<li><a href="#drivers">What drives the prediction</a></li>
+<li><a href="#worked">What worked, what didn't</a></li>
+<li><a href="#decisions">Decisions and why</a></li>
+<li><a href="#checks">Checks we ran</a></li>
+<li><a href="#limits">Caveats, limits, next steps</a></li>
+<li><a href="#repro">How to reproduce</a></li>
+</ol></nav>
+
+<!-- ============ 1 INSIGHTS ============ -->
+<h2 id="insights"><span class="n">1</span>Key insights</h2>
+<ul class="insights">
+<li><b>A flat's own past rent is the best single clue.</b> For flats advertised before, the typical miss on the sealed test was <b>$36.50</b> (1,903 adverts). For flats never advertised before it was <b>$67.50</b> (689 adverts). Removing the rent-history clues makes the model <b>$11.80 worse</b>, by far the biggest loss of any clue group. <span class="tag t-prv">PROVEN</span></li>
+<li><b>Nearby rents matter almost as much.</b> The rent of the 10 nearest flats with the same bedroom count is the clue the model leans on hardest: scrambling it makes the typical miss <b>$49.60 worse</b>. Same-building rents add another $8.60. Location is mostly captured by "what do the neighbours charge". <span class="tag t-prv">PROVEN</span></li>
+<li><b>Rents rose fast, then levelled off.</b> The median advertised 1-bedroom rent went from <b>$485</b> (early 2021) to <b>$790</b> (mid 2026), up about 63%. Most of that rise happened by 2023. Since early 2025 it has moved only about 5%. This likely explains why a "market will keep rising" adjustment did not help. <span class="tag t-obs">OBSERVED</span> <span class="tag t-hyp">HYPOTHESIS: the "why"</span></li>
+<li><b>A car space adds about $30 a week</b> in our predictions (median over all flats). By bedroom count the model's premium is about $23 / $32 / $26 / $50 (studio / 1 / 2 / 3+ beds). Simple same-building comparisons suggest more ($30–68), but flats with parking also tend to be better flats, so those comparisons overstate it. The model does not lean one way on car-space adverts: on two practice exams its median over- or under-shoot for car and no-car adverts differs by only $1–3. <span class="tag t-obs">OBSERVED</span> <span class="tag t-hyp">HYPOTHESIS: the raw gap is inflated by flat quality</span></li>
+<li><b>Big flats are hard.</b> The typical miss grows with size: studios $26, 1-bed $34, 2-bed $54, 3+ bed $110. Large flats are rarer, more varied and pricier, so dollar errors are larger. <span class="tag t-obs">OBSERVED</span></li>
+<li><b>Simple and honest beat clever.</b> Model tuning (14 settings tried), a market-drift adjustment and rounding prices to $5 all made the practice score worse. The default model with good clues won. <span class="tag t-prv">PROVEN</span></li>
+</ul>
+
+<figure>
+<figcaption><b>Median advertised weekly rent per quarter, 2021 to July 2026.</b> Raw medians of all adverts, not adjusted for mix. The last point (2026 Q3) is July only.</figcaption>
+<div class="legend"><span><i class="ln" style="background:var(--s1)"></i>1 bedroom</span><span><i class="ln" style="background:var(--s2)"></i>2 bedrooms</span></div>
+<svg id="trend" viewBox="0 0 860 300" width="100%" role="img" aria-labelledby="trt trd"><title id="trt">Median rent by quarter</title><desc id="trd">1-bedroom median rent rose from $485 in 2021 Q1 to $790 in 2026 Q3; 2-bedroom from $660 to $1,090. Growth flattened after 2023.</desc></svg>
+</figure>
+<details><summary>Show as a table</summary><div id="trendTable"></div></details>
+
+<!-- ============ 2 PROBLEM ============ -->
+<h2 id="problem"><span class="n">2</span>The problem, in plain words</h2>
+<p>Someone is about to advertise a City of Sydney flat for rent in August or September 2026. What weekly rent will they ask? And what would it be with a car space, and without one?</p>
+<p>We must give both prices for each of the 65,777 flats in the supplied list. The organisers then compare our price to the real asking rent on <b>1,699 adverts</b> from 1 Aug to 30 Sep 2026. They use the price that matches the advert (car space or not).</p>
+<p>The catch: we may only use information that existed on <b>31 July 2026</b>. Anything later, even by accident, would make the model look brilliant in testing and fail for real.</p>
+
+<h3>Words we use</h3>
+<dl class="gloss">
+<dt>Typical miss (median error)</dt><dd>Take every prediction's dollar error (ignoring whether it is too high or too low), sort them, and take the middle one. Half our guesses are closer than this, half are further. This is the official score. Lower is better.</dd>
+<dt>Within $100</dt><dd>The share of guesses that land within $100 of the real rent. The tie-breaker. Higher is better.</dd>
+<dt>R² ("R-squared")</dt><dd>How much of the difference in rents between flats the model explains. 1.0 = all of it, 0 = none (as good as guessing the average for everyone). Ours is 0.89.</dd>
+<dt>Clue (feature)</dt><dd>A number we work out for each flat that might help predict its rent, such as "its last advertised rent" or "how many bathrooms".</dd>
+<dt>Practice exam (fold)</dt><dd>A past two-month window where we pretend it is the start of that window, train on everything earlier and predict the window. We had three.</dd>
+<dt>Lockbox (sealed test)</dt><dd>One more two-month window (Jun–Jul 2026) kept sealed until every choice was final. Opened once. Its score is our honest estimate.</dd>
+<dt>Leakage</dt><dd>When information from the future sneaks into a clue. It makes test scores look better than real life. We guard against it everywhere.</dd>
+<dt>Gradient-boosted trees</dt><dd>A standard machine-learning method that builds many small "if this, then that" decision trees, each fixing the errors of the ones before. We used two versions: LightGBM and CatBoost.</dd>
+</dl>
+
+<!-- ============ 3 DATA ============ -->
+<h2 id="data"><span class="n">3</span>Data sources</h2>
+<p><b>We used only the three supplied files.</b> No API data, open data or other outside data went into the model or the submission.</p>
+<table>
+<tr><th>File</th><th>What it holds</th><th class="num">Rows</th><th>How we used it</th></tr>
+<tr><td>Flats list</td><td>The 65,777 flats to price: suburb, location, type, bedrooms, bathrooms, parking, floor, building size, mesh block.</td><td class="num">65,777</td><td>Flat facts for every prediction. Three columns removed (see cleaning).</td></tr>
+<tr><td>Past leases (adverts)</td><td>Historic rental adverts with rent, date, bedrooms, bathrooms, parking. Jan 2012 to 31 Jul 2026.</td><td class="num">112,457</td><td>The answers the model learns from, and the source of rent-history, building and neighbour clues.</td></tr>
+<tr><td>Blocks (Census)</td><td>Homes and people per mesh block (small area), Census 2021 and 2026 estimates.</td><td class="num">2,281</td><td>Tested as a clue group. It did not help, so it was dropped.</td></tr>
+</table>
+
+<h3>Considered and not used</h3>
+<ul>
+<li><b>Microburbs API.</b> We downloaded its rent-history adverts (filtered to the cutoff) and compared them with the supplied file. They mostly overlap: 95% of matched rents are identical. Only <b>635 more flats</b> would gain a rent history (49,683 → 50,318). We expected a gain under $2 and chose to spend that time checking our work instead. <span class="tag t-obs">OBSERVED</span> The API's "latest" and live-listing endpoints were never used because they can contain post-cutoff data.</li>
+<li><b>Open data</b> (OpenStreetMap, NSW bond lodgements, ABS Census tables). Some were downloaded early, with date filters. None were used in the model. We focused on the supplied data first, and the model already beat the benchmark by a wide margin.</li>
+</ul>
+
+<h3>Cleaning, with row counts</h3>
+<table>
+<tr><th>Rule</th><th>Why</th><th class="num">Rows affected</th></tr>
+<tr><td>Drop any advert dated after 31 Jul 2026 (and assert none remain)</td><td>The hard cutoff rule</td><td class="num">0 found</td></tr>
+<tr><td>Keep rents of $150–$6,000 a week</td><td>Remove impossible prices</td><td class="num">0 dropped</td></tr>
+<tr><td>Drop duplicate (flat, date) adverts</td><td>One advert per flat per day</td><td class="num">0 found</td></tr>
+<tr><td>Remove <i>ever advertised</i>, <i>first listed</i>, <i>attributes last seen</i> from the flats list</td><td>They were filled in on the cutoff date. In testing they would reveal whether a flat was about to be advertised.</td><td class="num">3 columns</td></tr>
+<tr><td>Remove <i>was leased</i> from adverts</td><td>Unreliable: 3–9% in 2015–2020, near 100% in other years</td><td class="num">1 column</td></tr>
+<tr><td>Impossible bedroom counts (0.5, 10–21) → unknown, then refilled and flagged</td><td>Would distort rent by bedroom</td><td class="num">2,161 adverts, 1 flat</td></tr>
+<tr><td>Floor above 90 → unknown, flagged</td><td>A floor of 303 was found</td><td class="num">flagged</td></tr>
+<tr><td>Blank flat parking filled from the same building, then similar flats, flagged</td><td>Every flat needs a value. Right 79.8% of the time in a hide-and-refill test, vs 66.1% for "always yes".</td><td class="num">5,793 flats</td></tr>
+<tr><td>Blank advert parking left blank (never set to "no")</td><td>Unknown is not the same as no car space</td><td class="num">kept blank</td></tr>
+<tr><td>Adverts for flats not in the flats list kept, marked</td><td>They still show area rents</td><td class="num">6,863 adverts</td></tr>
+</table>
+<p>Result: <b>65,777 → 65,777 flats</b> and <b>112,457 → 112,457 adverts</b>. Nothing dropped. The cleaning gives identical output on every run. <span class="tag t-prv">PROVEN</span> (tests)</p>
+
+<!-- ============ 4 SPLIT ============ -->
+<h2 id="split"><span class="n">4</span>The date split</h2>
+<p>We test the way the real exam works: learn from the past, predict the next two months. Every choice was made on three <b>practice exams</b>. The fourth window, Jun–Jul 2026, was the <b>sealed lockbox</b>.</p>
+<figure>
+<figcaption><b>Timeline.</b> Each row is one exam. Grey = adverts the model learned from. Coloured = the two months it was scored on. Rent history for clues goes back to 2012; training rows start 1 Jan 2023.</figcaption>
+<div class="legend"><span><i style="background:var(--gray)"></i>Training adverts (from 2023)</span><span><i style="background:var(--s1)"></i>Practice exam (choices made here)</span><span><i style="background:var(--s2)"></i>Sealed lockbox (scored once)</span><span><i style="background:var(--s3)"></i>Real exam (Aug–Sep, not available to us)</span></div>
+<svg id="timeline" viewBox="0 0 860 280" width="100%" role="img" aria-labelledby="tlt tld"><title id="tlt">Date split timeline</title><desc id="tld">Three practice folds: Dec 2025–Jan 2026, Feb–Mar 2026, Apr–May 2026, each trained on adverts before its start. Lockbox Jun–Jul 2026. Final model trained on everything to 31 Jul 2026, predicting Aug–Sep 2026.</desc></svg>
+</figure>
+<table>
+<tr><th>Role</th><th>Trained on adverts</th><th>Scored on adverts</th><th class="num">Adverts scored</th></tr>
+<tr><td>Practice exam 3</td><td>1 Jan 2023 – 30 Nov 2025</td><td>1 Dec 2025 – 31 Jan 2026</td><td class="num" rowspan="3">6,081 in total</td></tr>
+<tr><td>Practice exam 2</td><td>1 Jan 2023 – 31 Jan 2026</td><td>1 Feb – 31 Mar 2026</td></tr>
+<tr><td>Practice exam 1</td><td>1 Jan 2023 – 31 Mar 2026</td><td>1 Apr – 31 May 2026</td></tr>
+<tr><td><b>Sealed lockbox</b></td><td>1 Jan 2023 – 31 May 2026</td><td>1 Jun – 31 Jul 2026</td><td class="num">2,592</td></tr>
+<tr><td><b>Final model</b></td><td>1 Jan 2023 – 31 Jul 2026</td><td>predicts Aug – Sep 2026 (scored by organisers)</td><td class="num">1,699</td></tr>
+</table>
+<p><b>Fair-test details.</b></p>
+<ul>
+<li><b>Clues are frozen at the window start.</b> The real forecast is made on 31 July and cannot see any August advert. So in each test window, clues are built only from adverts before the window starts. A flat advertised twice inside a window does not "see" its own earlier advert. The model's sense of time is set to one month into the window, like the final run (made as of 1 Aug, time set to 1 Sep).</li>
+<li><b>Scored like the real exam.</b> Test adverts are limited to flats in the flats list with a known parking status, and each is scored on the matching price.</li>
+<li><b>No data after 31 July 2026 was used</b> anywhere: not in training, clues, tuning or checks. A guard rejects any later-dated row, and a test plants a "future" advert to make sure it is caught. <span class="tag t-prv">PROVEN</span></li>
+</ul>
+
+<!-- ============ 5 METHOD ============ -->
+<h2 id="method"><span class="n">5</span>Methodology</h2>
+<h3>Step by step</h3>
+<ol>
+<li><b>Clean</b> the three files (section 3).</li>
+<li><b>Build clues</b> for every advert since 2023 (47,418 training rows), each from earlier adverts only.</li>
+<li><b>Climb a ladder</b> of models, simplest first, so every step has to beat the one before.</li>
+<li><b>Test clue groups</b>: drop existing ones, try new ones, and run a per-clue importance test.</li>
+<li><b>Freeze the choice</b>, open the lockbox once.</li>
+<li><b>Refit on everything</b> up to 31 Jul 2026 and predict each flat twice: car space on, car space off.</li>
+</ol>
+
+<h3>The clues (27 in the final model)</h3>
+<table>
+<tr><th>Group</th><th>Clues, in plain words</th><th>Why we expected it to help</th></tr>
+<tr><td>Rent history</td><td>The flat's last advertised rent; months since then; that rent adjusted for market movement since; number of earlier adverts; how its last rent compared to the market then; whether its bedroom count changed</td><td>The same flat tends to ask a similar rent next time</td></tr>
+<tr><td>Market</td><td>Median rent for the suburb and bedroom count over the last 12 months (city-wide if under 20 adverts)</td><td>Sets the general level</td></tr>
+<tr><td>Building</td><td>Median rent of <i>other</i> flats in the same building with the same bedrooms, last 12 months (needs 3+ adverts); building's average bedrooms; building's share of flats with parking</td><td>Same building, similar rent; building "class"</td></tr>
+<tr><td>Neighbours</td><td>Distance-weighted rent of the 10 nearest same-bedroom adverts of other flats, and their average distance</td><td>Local price level, street by street</td></tr>
+<tr><td>Flat facts</td><td>Bedrooms, bathrooms, car space, type, floor, building size, flags for filled-in values</td><td>Size and parking set the base price</td></tr>
+<tr><td>Location</td><td>Latitude, longitude, distance to the CBD</td><td>Fills gaps where neighbours are sparse</td></tr>
+<tr><td>Time</td><td>Months since Jan 2020</td><td>Lets the model follow the market trend</td></tr>
+</table>
+<p>All "last 12 months" windows end at the start of the advert's month, so they only use earlier adverts.</p>
+
+<h3>The model</h3>
+<ul>
+<li><b>Two tree models, blended.</b> 75% LightGBM (1,400 trees) + 25% CatBoost (2,000 trees), default settings.</li>
+<li><b>Aim for the middle, on a percentage scale.</b> The models predict the logarithm of rent (so they learn "10% more" rather than "$100 more") and are trained to hit the <b>median</b>, not the average. The official score is a median, so this targets it directly.</li>
+<li><b>Car space: one model, priced twice.</b> Each flat is predicted with car space = 1 and car space = 0. The car-space price is forced to be at least the no-car price, and the gap is capped at $200 a week. (LightGBM cannot enforce "more parking never lowers rent" with this kind of target, so we enforce it after prediction.)</li>
+<li><b>No market-drift nudge.</b> We tested scaling prices by recent growth. It made practice scores worse, so the final prices rely on the time clue alone.</li>
+<li><b>Rounded to the nearest 50 cents.</b></li>
+</ul>
+
+<!-- ============ 6 RESULTS ============ -->
+<h2 id="results"><span class="n">6</span>Results and validation score</h2>
+<h3>The journey: each step had to beat the last</h3>
+<figure>
+<figcaption><b>Typical miss (median $ error), lower is better.</b> Practice bars = average of the three practice exams. Last bar = the sealed lockbox. Dashed line = Microburbs benchmark ($86).</figcaption>
+<div class="legend"><span><i style="background:var(--s1)"></i>Practice exams (mean of 3)</span><span><i style="background:var(--s2)"></i>Sealed lockbox (Jun–Jul 2026)</span></div>
+<svg id="journey" viewBox="0 0 860 400" width="100%" role="img" aria-labelledby="jt jd"><title id="jt">Median error by approach</title><desc id="jd">Suburb average $100, last rent adjusted $61.50, LightGBM $44.50, plus new clues $43.60, final blend $43.58, lockbox $42.00. Benchmark $86.</desc></svg>
+</figure>
+<table>
+<tr><th>Approach</th><th class="num">Typical miss</th><th class="num">Within $100</th><th class="num">R²</th><th class="num">Exams 1 / 2 / 3</th></tr>
+<tr><td>Suburb × bedrooms median</td><td class="num">$100.0</td><td class="num">55.9%</td><td class="num">0.631</td><td class="num">100 / 100 / 100</td></tr>
+<tr><td>Flat's last rent, market-adjusted (else suburb median)</td><td class="num">$61.5</td><td class="num">66.4%</td><td class="num">0.716</td><td class="num">57.5 / 69.6 / 57.5</td></tr>
+<tr><td>CatBoost alone</td><td class="num">$48.6</td><td class="num">76.6%</td><td class="num">0.881</td><td class="num">49.1 / 49.4 / 47.2</td></tr>
+<tr><td>LightGBM, raw dollars</td><td class="num">$45.5</td><td class="num">79.2%</td><td class="num">0.897</td><td class="num">45.5 / 46.6 / 44.6</td></tr>
+<tr><td>LightGBM, log scale</td><td class="num">$44.5</td><td class="num">79.0%</td><td class="num">0.894</td><td class="num">44.1 / 45.6 / 43.7</td></tr>
+<tr><td>+ new clues (rent-history extras, building mix)</td><td class="num">$43.6</td><td class="num">79.3%</td><td class="num">0.895</td><td class="num">44.7 / 43.6 / 42.6</td></tr>
+<tr class="em"><td>Final: 75% LightGBM + 25% CatBoost</td><td class="num">$43.58</td><td class="num">79.5%</td><td class="num">0.895</td><td class="num">44.5 / 43.5 / 42.75</td></tr>
+<tr class="em"><td>Sealed lockbox, Jun–Jul 2026 (n = 2,592)</td><td class="num">$42.0</td><td class="num">80.8%</td><td class="num">0.892</td><td class="num">—</td></tr>
+</table>
+<p class="muted">Practice exam 1 = Apr–May 2026, 2 = Feb–Mar 2026, 3 = Dec 2025–Jan 2026. Mean ± spread of the final model across the three: $43.58 ± $0.72.</p>
+
+<div class="note"><b>The sealed test agrees with practice.</b> Practice averaged $43.58. The lockbox, opened once after every choice was frozen, came in at $42.00. A big gap would have meant we had fooled ourselves by tuning to the practice windows. There was none. <span class="tag t-prv">PROVEN</span></div>
+
+<h3>The sealed lockbox, in detail</h3>
+<div class="grid2">
+<div>
+<table>
+<tr><th>Jun–Jul 2026 adverts</th><th class="num">Typical miss</th><th class="num">Within $100</th><th class="num">R²</th></tr>
+<tr class="em"><td>Our final model</td><td class="num">$42.0</td><td class="num">80.8%</td><td class="num">0.892</td></tr>
+<tr><td>Flat's last rent, adjusted</td><td class="num">$58.3</td><td class="num">69.8%</td><td class="num">0.684</td></tr>
+<tr><td>Suburb × bedrooms median</td><td class="num">$100.0</td><td class="num">54.9%</td><td class="num">0.602</td></tr>
+<tr><td>Microburbs benchmark (Aug–Sep)</td><td class="num">$86</td><td class="num">55.2%</td><td class="num">—</td></tr>
+</table>
+<p class="muted">All three of our rows are on the same 2,592 adverts. The Microburbs number is the organisers' figure on the real exam, quoted for reference.</p>
+</div>
+<div>
+<table>
+<tr><th>Group</th><th class="num">Typical miss</th><th class="num">Adverts</th></tr>
+<tr><td>Advertised before</td><td class="num">$36.5</td><td class="num">1,903</td></tr>
+<tr><td>Never advertised before</td><td class="num">$67.5</td><td class="num">689</td></tr>
+<tr><td>No car space</td><td class="num">$35.0</td><td class="num">—</td></tr>
+<tr><td>With car space</td><td class="num">$51.5</td><td class="num">—</td></tr>
+</table>
+<p class="muted">Likely reason: car-space adverts are mostly bigger, pricier flats, so their dollar misses are larger (hypothesis). The car/no-car split was printed during the lockbox run (counts not saved).</p>
+</div>
+</div>
+
+<figure>
+<figcaption><b>Typical miss on the lockbox, by bedrooms.</b></figcaption>
+<svg id="beds" viewBox="0 0 860 200" width="100%" role="img" aria-labelledby="bt bd"><title id="bt">Lockbox error by bedrooms</title><desc id="bd">Studio $26 (225 adverts), 1-bed $34 (1,154), 2-bed $54 (1,033), 3+ bed $110 (180).</desc></svg>
+</figure>
+<details><summary>Show as a table</summary>
+<table><tr><th>Bedrooms</th><th class="num">Typical miss</th><th class="num">Adverts</th></tr>
+<tr><td>Studio</td><td class="num">$26</td><td class="num">225</td></tr><tr><td>1</td><td class="num">$34</td><td class="num">1,154</td></tr>
+<tr><td>2</td><td class="num">$54</td><td class="num">1,033</td></tr><tr><td>3+</td><td class="num">$110</td><td class="num">180</td></tr></table></details>
+<p><b>What this tells us:</b> the model is strongest where it has a flat's own history and on small flats. It is weakest on first-time adverts and 3+ bedroom flats. Those are rarer, more varied and more expensive.</p>
+
+<h3>The submission</h3>
+<p><code>submissions/rents_FinePrintPredictions.csv</code>: 65,777 rows, one per flat, columns <code>gnaf_id, rent_with_car_space, rent_without_car_space</code>, no blanks. Written and checked by <code>src.submission.build</code>. Median predicted rent: <b>$891</b> without a car space, <b>$919</b> with. Median car-space premium <b>$29.50</b>; the $200 cap is hit for 1.2% of flats. <span class="tag t-obs">OBSERVED</span></p>
+
+<!-- ============ 7 DRIVERS ============ -->
+<h2 id="drivers"><span class="n">7</span>What drives the prediction</h2>
+<p>To see which clues matter, we <b>scrambled one clue at a time</b> (shuffled its values between adverts) on the practice exams and measured how much worse the typical miss got. A big jump means the model relies on that clue. We repeated the measurement 1,000 times by resampling to get a range, and applied a strict multiple-testing correction (Holm) so that "proven" means proven across 27 tests.</p>
+<figure>
+<figcaption><b>Extra typical miss ($) when a clue is scrambled</b>, top 15 of 27. Line = 95% range. Blue = proven to matter; grey = not proven.</figcaption>
+<div class="legend"><span><i style="background:var(--s1)"></i>Proven (corrected p &lt; 0.05)</span><span><i style="background:var(--gray)"></i>Not proven</span></div>
+<svg id="imp" viewBox="0 0 860 560" width="100%" role="img" aria-labelledby="it id"><title id="it">Feature importance</title><desc id="id">Nearest-neighbour rent +$49.6, last rent +$39.3, last rent market-adjusted +$11.6, building median +$8.6, bathrooms +$8.1, suburb median +$5.1 and others.</desc></svg>
+</figure>
+<details><summary>Show as a table</summary><div id="impTable"></div></details>
+<p><b>Read with care.</b> Clues that carry the same information share the credit: last rent and adjusted last rent partly cover for each other, so each looks smaller than the pair. The time clue cannot be tested this way, because inside a test window it is the same for every advert. Ten clues are proven. The others are not proven <i>individually</i>, but dropping several together hurt (section 8), so we kept them all.</p>
+
+<!-- ============ 8 WORKED ============ -->
+<h2 id="worked"><span class="n">8</span>What worked, what didn't</h2>
+<h3>What worked</h3>
+<table>
+<tr><th>Idea</th><th>Why it makes sense</th><th class="num">Evidence (practice mean)</th></tr>
+<tr><td><b>The flat's own rent history</b></td><td>The same flat asks a similar rent next time</td><td class="num">$11.80 worse without it</td></tr>
+<tr><td><b>Gradient-boosted trees</b> over hand rules</td><td>Weighs ~30 clues at once and finds interactions</td><td class="num">$61.5 → $44.5</td></tr>
+<tr><td><b>Log scale + median target</b></td><td>Learns percentages; targets what is scored</td><td class="num">$45.5 → $44.5</td></tr>
+<tr><td><b>Flat facts</b></td><td>Size and parking set the base</td><td class="num">$1.76 worse without</td></tr>
+<tr><td><b>Time clue</b></td><td>Older adverts are cheaper; the model needs to know when</td><td class="num">$1.24 worse without</td></tr>
+<tr><td><b>Location-type clues as a set</b> (market, building, neighbours, location, Census)</td><td>They back each other up</td><td class="num">$4.73 worse if all removed</td></tr>
+<tr><td><b>New: rent-history extras</b></td><td>Number of earlier adverts, last rent vs market, bedroom change</td><td class="num">−$0.71</td></tr>
+<tr><td><b>New: building mix</b></td><td>Average bedrooms and parking share = building "class"</td><td class="num">−$0.32 more on top</td></tr>
+<tr><td><b>Filled-in parking</b> (flagged) vs leaving it blank</td><td>Right 80% of the time</td><td class="num">$44.47 vs $44.55–44.80</td></tr>
+<tr><td><b>Adding 25% CatBoost</b></td><td>Ties on typical miss, slightly more within $100</td><td class="num">79.4% → 79.5%</td></tr>
+</table>
+
+<h3>What didn't</h3>
+<table>
+<tr><th>Idea</th><th>What happened</th></tr>
+<tr><td><b>Tuning the model's settings</b></td><td>14 random combinations, every one slightly worse ($44.6–45.8) than the defaults ($44.5). Stopped early.</td></tr>
+<tr><td><b>Market-drift adjustment</b></td><td>Scaling prices by recent growth made practice $0.25–0.42 worse. Rents have been flat lately (section 1). Left off.</td></tr>
+<tr><td><b>Rounding to $5</b></td><td>Raised within-$100 (79.5% → 80.1%) but worsened the typical miss by $1.42. The main score wins. Kept 50c rounding.</td></tr>
+<tr><td><b>Census / mesh-block data</b></td><td>$0.20 worse without it on its own, and dropped under our cumulative rule. Neighbour rents already describe the area.</td></tr>
+<tr><td><b>Building premium over all history</b></td><td>Gain $0.04. The 12-month building clue already covers it.</td></tr>
+<tr><td><b>Street premium, building age</b></td><td>Each helped alone (−$0.51, −$0.41) but added nothing once the two winning new groups were in (with them: $44.15 and $43.78 vs $43.64).</td></tr>
+<tr><td><b>Unit position in building</b></td><td>Made things $0.20 worse. Floor level = unit number ÷ 100 for 99.98% of flats, so there was nothing new to find.</td></tr>
+<tr><td><b>Cutting weak clues one by one</b></td><td>The proposed cut set looked $0.39 worse, but cut-set results bounced around by ±$0.40 (one was even better than the full set). That is noise. We kept all 27.</td></tr>
+<tr><td><b>Microburbs API adverts</b></td><td>Not tried in the model: only 635 more flats would gain a history. Expected under $2.</td></tr>
+</table>
+
+<!-- ============ 9 DECISIONS ============ -->
+<h2 id="decisions"><span class="n">9</span>Decisions and why</h2>
+<table>
+<tr><th>Decision</th><th>Why</th><th>Evidence</th></tr>
+<tr><td>Keep all 65,777 flats, no blanks</td><td>A blank scores worse than a wrong guess; rules require all flats, including the 4,246 missing from block files</td><td>submission check</td></tr>
+<tr><td>Training rows from 1 Jan 2023; history back to 2012</td><td>Recent market and recent parking data (2017–19 adverts are 35–40% blank on parking); old adverts still feed "last rent"</td><td>data_quality.md</td></tr>
+<tr><td>Choose on 3 practice exams, open the lockbox once</td><td>Stops us tuning to one lucky window</td><td>lockbox guard in code</td></tr>
+<tr><td>Freeze clues at the window start</td><td>The real forecast cannot see August adverts</td><td>tests</td></tr>
+<tr><td>Median target on log rent</td><td>Score is a median; percentages fit rents better</td><td>$44.5 vs $45.5</td></tr>
+<tr><td>Drop clue groups by their <i>combined</i> cost</td><td>One at a time each looked cheap (≤ $0.84) but removing five together cost $4.73. Rule changed to cumulative, tolerance $0.25</td><td>ablation runs</td></tr>
+<tr><td>Add a new clue group only if it helps ≥ $0.25</td><td>Smaller gains are within practice-exam noise</td><td>add runs</td></tr>
+<tr><td>No per-clue cuts</td><td>Cut effects were inside the ±$0.40 noise</td><td>importance trail</td></tr>
+<tr><td>Car-space price ≥ no-car price, gap ≤ $200</td><td>A car space should never lower rent; LightGBM can't enforce it with a median target, so we clip</td><td>tests</td></tr>
+<tr><td>Fill blank flat parking, keep a flag</td><td>79.8% right vs 66.1% guess; slightly better scores</td><td>hide-and-refill test</td></tr>
+<tr><td>75/25 blend, no drift, 50c rounding</td><td>Best typical miss; ties broken by within $100</td><td>blend grid (20 runs)</td></tr>
+<tr><td>Skip API and open data</td><td>Small expected gain; time better spent on checks</td><td>overlap check</td></tr>
+</table>
+
+<!-- ============ 10 CHECKS ============ -->
+<h2 id="checks"><span class="n">10</span>Checks we ran</h2>
+<table>
+<tr><th>Check</th><th>Result</th></tr>
+<tr><td><b>Cutoff guard.</b> Plant a future advert; it must be removed.</td><td>Passes. No row after 31 Jul 2026 anywhere. <span class="tag t-prv">PROVEN</span></td></tr>
+<tr><td><b>Clue leakage test on real data.</b> Rebuild June 2026 clues with history cut at 1 June; they must match.</td><td>First <b>failed</b>: same-day adverts in one building tied on distance, and their order was random. Not future data, but we fixed the sort order. Now passes. <span class="tag t-prv">PROVEN</span></td></tr>
+<tr><td><b>Group-drop rule.</b> Does dropping groups one at a time understate their value?</td><td>Yes. Five groups each looked cheap; together they cost $4.73. We caught it before it shipped and made the rule cumulative. <span class="tag t-prv">PROVEN</span></td></tr>
+<tr><td><b>Stale flat facts.</b> Bedrooms, bathrooms and parking in the flats list are copied from each flat's <i>latest</i> advert, so in testing the model saw the true values.</td><td>Confirmed (100% agreement on Jun–Jul adverts). Re-scored the lockbox with the older values the real forecast will see: $43.0 → $43.0 (single LightGBM), within $100 79.9% → 79.2%. Only 92 of 2,592 changed. Harmless. <span class="tag t-prv">PROVEN</span></td></tr>
+<tr><td><b>Car-space premium.</b> Is ours too low? Model $23/32/26/50 by beds vs same-building comparisons $30/68/55/−12.</td><td>The comparisons are confounded (parking flats are better flats; the 3+ bed figure is even negative). On practice exams 1 and 2, the median <i>signed</i> error (does the model price too high or too low?) for car and no-car adverts differs by only $1.30 and $3.20. No sign of systematic under-pricing. Kept. (The <i>size</i> of the miss is larger for car-space adverts, $51.50 vs $35 on the lockbox, most likely because they are bigger, pricier flats.) <span class="tag t-obs">OBSERVED</span></td></tr>
+<tr><td><b>Lockbox lock.</b> The code refuses to score Jun–Jul until the choice is saved and signed off.</td><td>Opened once. <span class="tag t-prv">PROVEN</span></td></tr>
+<tr><td><b>Submission format.</b></td><td>65,777 unique ids, both columns, no blanks, with ≥ without. <span class="tag t-prv">PROVEN</span></td></tr>
+<tr><td><b>Calibration of our testing.</b> Does our "suburb × beds" baseline match the organisers' simple baseline?</td><td>Ours $100, theirs ≈ $100. <span class="tag t-obs">OBSERVED</span></td></tr>
+</table>
+
+<!-- ============ 11 LIMITS ============ -->
+<h2 id="limits"><span class="n">11</span>Caveats, limits, next steps</h2>
+<ul>
+<li><b>The real exam will likely be harder than $42.</b> August–September is one to two months further from our data than the lockbox windows, and the 1,699 real adverts may have a different mix (more first-time or larger flats). Our <i>guess</i> for the real score is <b>$50–60</b>. Still well under $86, but not measured. <span class="tag t-hyp">HYPOTHESIS</span></li>
+<li><b>Bigger flats and first-time adverts are weak spots</b> ($110 and $67.50 typical miss). Better size information (floor area) would help most, but we don't have it.</li>
+<li><b>The car-space premium is a model estimate,</b> not observed on the same flat. Few flats changed parking between adverts (320 since 2024), so we cannot measure it directly.</li>
+<li><b>Training clues are slightly staler than final ones.</b> 12-month windows end at the start of each advert's month, so training rows are on average ~15 days staler than the final rows. Accepted.</li>
+<li><b>Small gains are small.</b> The new clue groups improved practice by under $1 in total, close to the noise between windows.</li>
+<li><b>Next steps, if time allowed:</b> test the API adverts for the extra 635 flats; a separate model for flats with no history; floor-area data if it can be found from a source dated before the cutoff.</li>
+</ul>
+
+<!-- ============ 12 REPRO ============ -->
+<h2 id="repro"><span class="n">12</span>How to reproduce</h2>
+<p>From the repo root, with the three raw CSVs in <code>data/raw/</code> (Windows: <code>.venv/Scripts/python</code>):</p>
+<pre>python -m src.clean                     # clean flats + adverts -> data/processed/*.parquet
+python -m src.train --stage ladder      # baselines, LightGBM, CatBoost (practice exams only)
+python -m src.train --stage tune        # random settings search
+python -m src.train --stage ablate      # clue-group drop tests
+python -m src.train --stage add         # new clue groups
+python -m src.importance                # scramble-one-clue test, writes reports/feature_importance.csv
+python -m src.train --stage finalize    # blend weight, drift, rounding -> models/chosen.json
+#   (sign-off: set "lockbox_ok": true in models/chosen.json)
+python -m src.train --stage lockbox     # the one Jun-Jul 2026 score
+python -m src.predict                   # refit to 31 Jul 2026, write submissions/rents_FinePrintPredictions.csv
+python -m pytest -q                     # tests</pre>
+<p>Every run is logged in <code>experiments/runs.jsonl</code> with its settings, clue list and data fingerprints. Every decision is in <code>experiments/DECISIONS.md</code>. Random seed fixed in <code>src/config.py</code>.</p>
+
+<footer><small><b>Privacy.</b> This page shows aggregates only: no addresses, flat ids or individual adverts. Private data stayed on the team machine and was not uploaded anywhere. The page is a single file with no external links or scripts.</small></footer>
+<div id="tip" role="tooltip"></div>
+</main>
+<script>
+(function(){
+const NS='http://www.w3.org/2000/svg',tip=document.getElementById('tip');
+const css=k=>getComputedStyle(document.documentElement).getPropertyValue(k).trim();
+function mk(svg,n,a,t){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);if(t!=null)e.textContent=t;svg.appendChild(e);return e;}
+function showTip(e,val,lab){tip.textContent='';const b=document.createElement('b');b.textContent=val;tip.appendChild(b);tip.appendChild(document.createElement('br'));tip.appendChild(document.createTextNode(lab));
+  const x=Math.min(e.clientX+14,window.innerWidth-330);tip.style.left=x+'px';tip.style.top=(e.clientY+14)+'px';tip.style.opacity=1;}
+function hideTip(){tip.style.opacity=0;}
+function bindTip(el,val,lab,mark){el.setAttribute('tabindex','0');
+  el.addEventListener('pointermove',e=>{showTip(e,val,lab);if(mark)mark.style.opacity=.75;});
+  el.addEventListener('pointerleave',()=>{hideTip();if(mark)mark.style.opacity=1;});
+  el.addEventListener('focus',()=>{const r=el.getBoundingClientRect();showTip({clientX:r.right-40,clientY:r.top},val,lab);if(mark)mark.style.opacity=.75;});
+  el.addEventListener('blur',()=>{hideTip();if(mark)mark.style.opacity=1;});}
+function hbar(svg,L,y,w,h,fill){ // rounded data-end, square at baseline
+  const r=Math.min(4,w/2);return mk(svg,'path',{d:`M${L},${y} h${w-r} a${r},${r} 0 0 1 ${r},${r} v${h-2*r} a${r},${r} 0 0 1 ${-r},${r} h${-(w-r)} z`,fill});}
+const fmt=v=>'$'+(Math.abs(v)>=1000?Math.round(v).toLocaleString('en-AU'):(Number.isInteger(v)?v:v.toFixed(2)));
+
+/* ---- trend line ---- */
+function trend(){
+ const q=['2021Q1','2021Q2','2021Q3','2021Q4','2022Q1','2022Q2','2022Q3','2022Q4','2023Q1','2023Q2','2023Q3','2023Q4','2024Q1','2024Q2','2024Q3','2024Q4','2025Q1','2025Q2','2025Q3','2025Q4','2026Q1','2026Q2','2026Q3'];
+ const b1=[485,500,500,520,550,570,600,640,665,700,700,720,730,710,700,730,750,750,750,780,780,795,790];
+ const b2=[660,697,700,700,775,790,850,880,950,995,975,1000,1050,1000,1000,1000,1100,1050,1080,1100,1100,1100,1090];
+ const svg=document.getElementById('trend');svg.textContent='';mk(svg,'title',{},'Median rent by quarter');
+ const L=60,R=755,T=16,B=262,lo=400,hi=1200,x=i=>L+(R-L)*i/(q.length-1),y=v=>B-(B-T)*(v-lo)/(hi-lo);
+ [400,600,800,1000,1200].forEach(v=>{mk(svg,'line',{x1:L,x2:R,y1:y(v),y2:y(v),stroke:css('--grid'),'stroke-width':1});mk(svg,'text',{x:L-8,y:y(v)+4,'text-anchor':'end','font-size':12,fill:css('--muted')},'$'+v.toLocaleString('en-AU'));});
+ q.forEach((s,i)=>{if(s.endsWith('Q1'))mk(svg,'text',{x:x(i),y:B+20,'text-anchor':'middle','font-size':12,fill:css('--muted')},s.slice(0,4));});
+ [[b1,'--s1'],[b2,'--s2']].forEach(([d,c])=>{mk(svg,'path',{d:d.map((v,i)=>(i?'L':'M')+x(i)+','+y(v)).join(' '),fill:'none',stroke:css(c),'stroke-width':2,'stroke-linejoin':'round','stroke-linecap':'round'});
+   mk(svg,'circle',{cx:x(d.length-1),cy:y(d[d.length-1]),r:4,fill:css(c),stroke:css('--surface'),'stroke-width':2});});
+ mk(svg,'text',{x:R+8,y:y(b1[22])+4,'font-size':12.5,fill:css('--ink2')},'1-bed $790');
+ mk(svg,'text',{x:R+8,y:y(b2[22])+4,'font-size':12.5,fill:css('--ink2')},'2-bed $1,090');
+ const cross=mk(svg,'line',{x1:0,x2:0,y1:T,y2:B,stroke:css('--muted'),'stroke-width':1,opacity:0});
+ const hit=mk(svg,'rect',{x:L-10,y:T,width:R-L+20,height:B-T,fill:'transparent'});
+ hit.addEventListener('pointermove',e=>{const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;const sp=p.matrixTransform(svg.getScreenCTM().inverse());
+   const i=Math.max(0,Math.min(q.length-1,Math.round((sp.x-L)/(R-L)*(q.length-1))));cross.setAttribute('x1',x(i));cross.setAttribute('x2',x(i));cross.setAttribute('opacity',1);
+   showTip(e,`1-bed $${b1[i]} · 2-bed $${b2[i].toLocaleString('en-AU')}`,q[i].replace('Q',' Q')+(i==22?' (July only)':''));});
+ hit.addEventListener('pointerleave',()=>{cross.setAttribute('opacity',0);hideTip();});
+ const t=document.getElementById('trendTable');if(!t.firstChild){const tb=document.createElement('table');const h=tb.insertRow();['Quarter','1 bedroom','2 bedrooms'].forEach((s,j)=>{const th=document.createElement('th');th.textContent=s;if(j)th.className='num';h.appendChild(th);});
+ q.forEach((s,i)=>{const r=tb.insertRow();[s,'$'+b1[i],'$'+b2[i].toLocaleString('en-AU')].forEach((v,j)=>{const c=r.insertCell();c.textContent=v;if(j)c.className='num';});});t.appendChild(tb);}
+}
+
+/* ---- timeline ---- */
+function timeline(){
+ const svg=document.getElementById('timeline');svg.textContent='';mk(svg,'title',{},'Date split timeline');
+ // months from 2023-01 ; axis 2023-01 .. 2026-10
+ const L=150,R=840,m0=0,m1=46,x=m=>L+(R-L)*(m-m0)/(m1-m0),rowH=40,T=14,bh=22;
+ const rows=[['Practice exam 3',35,37,'--s1','Dec 2025 – Jan 2026'],['Practice exam 2',37,39,'--s1','Feb – Mar 2026'],['Practice exam 1',39,41,'--s1','Apr – May 2026'],['Sealed lockbox',41,43,'--s2','Jun – Jul 2026'],['Final model',43,45,'--s3','Aug – Sep 2026 (real exam)']];
+ [[0,'2023'],[12,'2024'],[24,'2025'],[36,'2026']].forEach(([m,s])=>{mk(svg,'line',{x1:x(m),x2:x(m),y1:T-4,y2:T+rowH*rows.length,stroke:css('--grid'),'stroke-width':1});mk(svg,'text',{x:x(m)+4,y:T+rowH*rows.length+18,'font-size':12,fill:css('--muted')},s);});
+ rows.forEach(([lab,a,b,c,win],i)=>{const y=T+i*rowH;
+  mk(svg,'text',{x:L-10,y:y+bh/2+5,'text-anchor':'end','font-size':13.5,fill:css('--ink2')},lab);
+  const g=mk(svg,'rect',{x:x(0),y,width:x(a)-x(0)-2,height:bh,rx:3,fill:css('--gray')});
+  const f=mk(svg,'rect',{x:x(a),y,width:x(b)-x(a),height:bh,rx:3,fill:css(c)});
+  bindTip(g,'Training adverts','1 Jan 2023 up to the start of '+win.split(' (')[0].split(' – ')[0],g);
+  bindTip(f,win,lab+(i==4?': predicted from data to 31 Jul 2026':': scored here'),f);
+ });
+ const cx=x(43);mk(svg,'line',{x1:cx,x2:cx,y1:T-8,y2:T+rowH*rows.length+2,stroke:css('--ink'),'stroke-width':1.5,'stroke-dasharray':'4 3'});
+ mk(svg,'text',{x:cx,y:T+rowH*rows.length+34,'text-anchor':'middle','font-size':12.5,'font-weight':600,fill:css('--ink')},'cutoff 31 Jul 2026');
+ mk(svg,'text',{x:L,y:T+rowH*rows.length+50,'font-size':12,fill:css('--muted')},'Rent-history clues use adverts back to Jan 2012 (off the left edge).');
+}
+
+/* ---- journey bars ---- */
+function journey(){
+ const d=[['Suburb × beds median',100.0,'55.9%','p'],['Last rent, market-adjusted',61.5,'66.4%','p'],['CatBoost alone',48.6,'76.6%','p'],['LightGBM, raw $',45.5,'79.2%','p'],['LightGBM, log scale',44.5,'79.0%','p'],['+ new clues',43.6,'79.3%','p'],['Final blend 75/25',43.58,'79.5%','p'],['Sealed lockbox',42.0,'80.8%','l']];
+ const svg=document.getElementById('journey');svg.textContent='';mk(svg,'title',{},'Median error by approach');
+ const L=200,R=800,T=24,rowH=44,bh=22,max=110,x=v=>L+(R-L)*v/max,H=T+rowH*d.length;
+ [0,25,50,75,100].forEach(v=>{mk(svg,'line',{x1:x(v),x2:x(v),y1:T-6,y2:H-14,stroke:css('--grid'),'stroke-width':1});mk(svg,'text',{x:x(v),y:H+4,'text-anchor':'middle','font-size':12,fill:css('--muted')},'$'+v);});
+ d.forEach((r,i)=>{const y=T+i*rowH;mk(svg,'text',{x:L-10,y:y+bh/2+5,'text-anchor':'end','font-size':13.5,fill:css('--ink2')},r[0]);
+  const bar=hbar(svg,L,y,x(r[1])-L,bh,css(r[3]=='l'?'--s2':'--s1'));
+  mk(svg,'text',{x:x(r[1])+7,y:y+bh/2+5,'font-size':13.5,'font-weight':600,fill:css('--ink')},'$'+(r[1]%1?r[1].toFixed(r[1]*100%10?2:1):r[1].toFixed(0)));
+  const hit=mk(svg,'rect',{x:0,y:y-10,width:860,height:rowH-2,fill:'transparent'});
+  bindTip(hit,'$'+r[1]+' typical miss',r[0]+', '+r[2]+' within $100'+(r[3]=='l'?' (Jun–Jul 2026, n = 2,592)':' (mean of 3 practice exams)'),bar);});
+ const bx=x(86);mk(svg,'line',{x1:bx,x2:bx,y1:T-14,y2:H-14,stroke:css('--ink2'),'stroke-width':1.5,'stroke-dasharray':'5 4'});
+ mk(svg,'text',{x:bx+6,y:T-6,'font-size':12.5,fill:css('--ink2')},'Microburbs $86');
+}
+
+/* ---- beds bars ---- */
+function beds(){
+ const d=[['Studio',26,225],['1 bedroom',34,1154],['2 bedrooms',54,1033],['3+ bedrooms',110,180]];
+ const svg=document.getElementById('beds');svg.textContent='';mk(svg,'title',{},'Lockbox error by bedrooms');
+ const L=200,R=800,T=10,rowH=44,bh=22,max=120,x=v=>L+(R-L)*v/max,H=T+rowH*d.length;
+ [0,30,60,90,120].forEach(v=>{mk(svg,'line',{x1:x(v),x2:x(v),y1:T-6,y2:H-14,stroke:css('--grid'),'stroke-width':1});mk(svg,'text',{x:x(v),y:H+4,'text-anchor':'middle','font-size':12,fill:css('--muted')},'$'+v);});
+ d.forEach((r,i)=>{const y=T+i*rowH;mk(svg,'text',{x:L-10,y:y+bh/2+5,'text-anchor':'end','font-size':13.5,fill:css('--ink2')},r[0]);
+  const bar=hbar(svg,L,y,x(r[1])-L,bh,css('--s1'));
+  mk(svg,'text',{x:x(r[1])+7,y:y+bh/2+5,'font-size':13.5,'font-weight':600,fill:css('--ink')},'$'+r[1]);
+  const hit=mk(svg,'rect',{x:0,y:y-10,width:860,height:rowH-2,fill:'transparent'});
+  bindTip(hit,'$'+r[1]+' typical miss',r[0]+', '+r[2].toLocaleString('en-AU')+' adverts',bar);});
+}
+
+/* ---- importance ---- */
+function imp(){
+ const d=[['Rent of 10 nearest same-bed flats','nn_rent_w',49.57,46.10,53.59,1],['Flat’s last advertised rent','prior_rent',39.35,36.75,42.04,1],['Last rent, adjusted for market','prior_rent_adj',11.65,9.97,13.75,1],['Same-building median, 12 months','bld_median12',8.64,6.95,10.38,1],['Bathrooms','bathrooms',8.09,6.43,9.41,1],['Suburb × beds median, 12 months','mkt_median12',5.07,3.84,6.37,1],['Building’s average bedrooms','bld_mean_beds',3.82,2.61,5.14,1],['Months since last advert','prior_months_since',3.28,2.19,4.51,1],['Car space','car_space',3.07,2.00,4.24,1],['Floor level','floor_level',1.89,0.83,2.70,1],['Building’s share with parking','bld_share_parking',1.36,0.38,2.32,0],['Last rent vs market then','prior_ratio',1.29,0.33,2.19,0],['Longitude','longitude',0.98,0.13,2.05,0],['Property type','property_type_code',0.92,-0.08,1.66,0],['Latitude','latitude',0.86,-0.04,1.73,0]];
+ const svg=document.getElementById('imp');svg.textContent='';mk(svg,'title',{},'Feature importance');
+ const L=270,R=800,T=10,rowH=34,bh=18,lo=0,max=55,x=v=>L+(R-L)*(Math.max(v,lo))/max,H=T+rowH*d.length;
+ [0,10,20,30,40,50].forEach(v=>{mk(svg,'line',{x1:x(v),x2:x(v),y1:T-6,y2:H-10,stroke:css('--grid'),'stroke-width':1});mk(svg,'text',{x:x(v),y:H+8,'text-anchor':'middle','font-size':12,fill:css('--muted')},'+$'+v);});
+ d.forEach((r,i)=>{const y=T+i*rowH;mk(svg,'text',{x:L-10,y:y+bh/2+5,'text-anchor':'end','font-size':13,fill:css('--ink2')},r[0]);
+  const bar=hbar(svg,L,y,Math.max(2,x(r[2])-L),bh,css(r[5]?'--s1':'--gray'));
+  mk(svg,'line',{x1:x(r[3]),x2:x(r[4]),y1:y+bh/2,y2:y+bh/2,stroke:css('--ink2'),'stroke-width':1.5});
+  mk(svg,'text',{x:Math.max(x(r[2]),x(r[4]))+7,y:y+bh/2+5,'font-size':12.5,'font-weight':600,fill:css('--ink')},'+$'+r[2].toFixed(2));
+  const hit=mk(svg,'rect',{x:0,y:y-8,width:860,height:rowH-2,fill:'transparent'});
+  bindTip(hit,'+$'+r[2].toFixed(2)+' (range '+r[3].toFixed(2)+' to '+r[4].toFixed(2)+')',r[0]+' ['+r[1]+'] '+(r[5]?'proven':'not proven'),bar);});
+ const t=document.getElementById('impTable');if(!t.firstChild){const tb=document.createElement('table');const h=tb.insertRow();['Clue','Code name','Extra miss','95% range','Proven?'].forEach((s,j)=>{const th=document.createElement('th');th.textContent=s;if(j==2||j==3)th.className='num';h.appendChild(th);});
+  d.forEach(r=>{const row=tb.insertRow();[r[0],r[1],'+$'+r[2].toFixed(2),r[3].toFixed(2)+' to '+r[4].toFixed(2),r[5]?'yes':'no'].forEach((v,j)=>{const c=row.insertCell();c.textContent=v;if(j==2||j==3)c.className='num';});});
+  const n=document.createElement('p');n.className='muted';n.textContent='Remaining 12 clues: each under +$0.80, not proven. Time and the parking-filled flag cannot be tested by scrambling (constant inside a test window). Full list: reports/feature_importance.csv.';t.appendChild(tb);t.appendChild(n);}
+}
+function all(){trend();timeline();journey();beds();imp();}
+all();
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',all);
+})();
+</script>
+<script>
+(function(){var links=[].slice.call(document.querySelectorAll('nav.toc a[href^="#"]'));var map={};links.forEach(function(a){map[a.getAttribute('href').slice(1)]=a;});
+var hero=document.querySelector('.hero');
+new IntersectionObserver(function(e){document.body.classList.toggle('at-top',e[0].isIntersecting);},{threshold:0.05}).observe(hero);
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){links.forEach(function(a){a.classList.remove('active');});var a=map[e.target.id];if(a)a.classList.add('active');}});},{rootMargin:'0px 0px -70% 0px'});
+[].forEach.call(document.querySelectorAll('h2[id]'),function(h){io.observe(h);});})();
+</script>
+</body></html>
