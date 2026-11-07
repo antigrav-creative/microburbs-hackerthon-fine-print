@@ -101,39 +101,42 @@ export default function Options() {
   };
 
   return (
-    <div className="mx-auto my-8 max-w-[560px] px-4">
-      <h1 className="mb-2 text-[26px] font-bold">Fine Print settings</h1>
-      <p className="text-muted">Stored in this browser only (chrome.storage.local). Never committed.</p>
+    <div className="mx-auto my-10 max-w-[560px] px-4">
+      <header className="mb-6 flex items-center gap-2.5">
+        <span className="inline-grid h-6 w-6 place-items-center rounded-[6px] bg-ink text-[13px] text-paper">F</span>
+        <h1 className="font-voice text-[34px] font-normal leading-none tracking-[-0.01em]">Fine Print settings</h1>
+      </header>
+      <p className="mt-1 mb-6 text-[12.5px] text-muted">Stored in this browser only (chrome.storage.local). Never committed.</p>
 
-      <fieldset className="mb-4 rounded-xl border border-line bg-card px-3.5 py-3">
-        <legend className="px-1 font-semibold">LLM</legend>
-        <label className={LABEL_CLASS}>
-          Provider
+      <fieldset className="mb-4 rounded-[10px] border border-line bg-card px-4 py-3">
+        <legend className="px-1 font-mono text-[10.5px] uppercase tracking-[0.06em] text-muted">Model</legend>
+        <div className="grid grid-cols-[130px_1fr] items-center gap-x-3 gap-y-2.5">
+          <label className="text-[12.5px] text-muted">Provider</label>
           <select value={form.provider} onChange={(e) => onProvider(e.target.value)}>
             <option value="deepseek">DeepSeek</option>
             <option value="openrouter">OpenRouter</option>
           </select>
-        </label>
-        <label className={LABEL_CLASS}>
-          Model
+          <label className="text-[12.5px] text-muted">Model</label>
           <input
             value={form.model}
             onChange={(e) => set('model', e.target.value)}
-            placeholder="deepseek-chat  ·  or e.g. deepseek/deepseek-chat on OpenRouter"
+            placeholder="deepseek-chat  ·  or deepseek/deepseek-chat on OpenRouter"
           />
-        </label>
-        <label className={LABEL_CLASS}>
-          DeepSeek API key
-          <input type="password" autoComplete="off" value={form.keys.deepseek ?? ''} onChange={(e) => setKey('deepseek', e.target.value)} />
-        </label>
-        <label className={LABEL_CLASS}>
-          OpenRouter API key
-          <input type="password" autoComplete="off" value={form.keys.openrouter ?? ''} onChange={(e) => setKey('openrouter', e.target.value)} />
-        </label>
+        </div>
+        <div className="mt-3 grid grid-cols-1 gap-2.5 border-t border-line pt-3">
+          <label className={LABEL_CLASS}>
+            DeepSeek API key
+            <input type="password" autoComplete="off" value={form.keys.deepseek ?? ''} onChange={(e) => setKey('deepseek', e.target.value)} />
+          </label>
+          <label className={LABEL_CLASS}>
+            OpenRouter API key
+            <input type="password" autoComplete="off" value={form.keys.openrouter ?? ''} onChange={(e) => setKey('openrouter', e.target.value)} />
+          </label>
+        </div>
       </fieldset>
 
-      <fieldset className="mb-4 rounded-xl border border-line bg-card px-3.5 py-3">
-        <legend className="px-1 font-semibold">Microburbs</legend>
+      <fieldset className="mb-4 rounded-[10px] border border-line bg-card px-4 py-3">
+        <legend className="px-1 font-mono text-[10.5px] uppercase tracking-[0.06em] text-muted">Microburbs data</legend>
         <label className={LABEL_CLASS}>
           Source
           <select value={form.mbSource} onChange={(e) => set('mbSource', e.target.value)}>
@@ -148,32 +151,42 @@ export default function Options() {
         </label>
       </fieldset>
 
-      <fieldset className="mb-4 rounded-xl border border-line bg-card px-3.5 py-3">
-        <legend className="px-1 font-semibold">Investor brief</legend>
-        <label className={LABEL_CLASS}>
-          Budget ($)
-          <input type="number" value={form.brief.budget ?? ''} onChange={(e) => setBrief('budget', e.target.value)} />
-        </label>
-        <label className={LABEL_CLASS}>
-          Deposit ($)
-          <input type="number" value={form.brief.deposit ?? ''} onChange={(e) => setBrief('deposit', e.target.value)} />
-        </label>
-        <label className={LABEL_CLASS}>
-          Minimum gross yield (%)
-          <input type="number" step="0.1" value={form.brief.minYield ?? ''} onChange={(e) => setBrief('minYield', e.target.value)} />
-        </label>
-        <label className={LABEL_CLASS}>
-          Hold (years)
-          <input type="number" value={form.brief.holdYears ?? ''} onChange={(e) => setBrief('holdYears', e.target.value)} />
-        </label>
+      <fieldset className="mb-4 rounded-[10px] border border-line bg-card px-4 py-3">
+        <legend className="px-1 font-mono text-[10.5px] uppercase tracking-[0.06em] text-muted">Investor brief</legend>
+        <div className="grid grid-cols-2 gap-x-3 gap-y-2.5">
+          <label className={LABEL_CLASS}>
+            Budget ($)
+            <input type="number" value={form.brief.budget ?? ''} onChange={(e) => setBrief('budget', e.target.value)} />
+          </label>
+          <label className={LABEL_CLASS}>
+            Deposit ($)
+            <input type="number" value={form.brief.deposit ?? ''} onChange={(e) => setBrief('deposit', e.target.value)} />
+          </label>
+          <label className={LABEL_CLASS}>
+            Min gross yield (%)
+            <input type="number" step="0.1" value={form.brief.minYield ?? ''} onChange={(e) => setBrief('minYield', e.target.value)} />
+          </label>
+          <label className={LABEL_CLASS}>
+            Hold (years)
+            <input type="number" value={form.brief.holdYears ?? ''} onChange={(e) => setBrief('holdYears', e.target.value)} />
+          </label>
+        </div>
       </fieldset>
 
-      <button onClick={save}>Save</button> <span className="text-muted">{saved ? 'Saved.' : ''}</span>
+      <div className="flex items-center gap-3">
+        <button onClick={save} className="border-none bg-ink px-4 py-2 font-semibold text-paper hover:opacity-85">
+          Save
+        </button>
+        <span className="font-mono text-[11px] text-muted">{saved ? 'Saved.' : ''}</span>
+      </div>
 
-      <fieldset className="mt-6 rounded-xl border border-line bg-card px-3.5 py-3">
-        <legend className="px-1 font-semibold">Debug</legend>
-        <p className="mb-2 text-muted">Download everything stored locally (transcripts, saved properties, card lessons, settings) as one JSON file. API keys are removed.</p>
-        <button onClick={exportData}>Export data (JSON)</button> <span className="text-muted">{exported}</span>
+      <fieldset className="mt-6 rounded-[10px] border border-line bg-card px-4 py-3">
+        <legend className="px-1 font-mono text-[10.5px] uppercase tracking-[0.06em] text-muted">Debug</legend>
+        <p className="mb-2.5 text-[12.5px] text-muted">Download everything stored locally (transcripts, saved properties, card lessons, settings) as one JSON file. API keys are removed.</p>
+        <div className="flex items-center gap-3">
+          <button onClick={exportData}>Export data (JSON)</button>
+          <span className="font-mono text-[11px] text-muted">{exported}</span>
+        </div>
       </fieldset>
     </div>
   );

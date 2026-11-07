@@ -1,64 +1,32 @@
-// The native overview block (design B "Listing + paper panel"): one instant view of the
-// listing built straight from the brief — no model call. POC; Carlos polishes in React.
-//   header (matched address) · price gauge · legend · 3 readouts · "What the listing
-//   doesn't say" signal rows (tap → asks the agent the matching question).
-// DOM + textContent only; model text never reaches here.
+// The native overview block (Figma node 2:764): one instant view of the listing
+// built straight from the brief — no model call.
+//   header (matched address + live pill) · sale & budget analysis card (big likely
+//   sale, budget badge, horizontal price scale, price breakdown) · "The numbers"
+//   dark band · "What the listing doesn't say" insight rows (tap → asks the agent).
+// DOM + textContent only; model text never reaches here. Icons are static markup
+// from ui/icons.jsx — never model text.
 
-const SVG = 'http://www.w3.org/2000/svg';
+import { iconSvg } from './icons.jsx';
+
 const h = (tag, cls, text) => {
   const n = document.createElement(tag);
   if (cls) n.className = cls;
   if (text !== undefined && text !== null) n.textContent = String(text);
   return n;
 };
-const svg = (tag, attrs) => {
-  const n = document.createElementNS(SVG, tag);
-  for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, String(v));
-  return n;
+const icon = (parent, name, size, cls) => {
+  const s = document.createElement('span');
+  s.className = cls || '';
+  s.innerHTML = iconSvg(name, size); // static strings only
+  parent.append(s);
+  return s;
 };
 const K = (n) => (n == null ? 'n/a' : n >= 1e6 ? `$${(n / 1e6).toFixed(2).replace(/\.?0+$/, '')}M` : `$${Math.round(n / 1000)}K`);
 const titleCase = (s) => String(s ?? '').toLowerCase().replace(/\b[a-z]/g, (c) => c.toUpperCase());
 const shortAddress = (a) => titleCase(String(a ?? '').replace(/^UNIT\s+/i, '')).replace(/\s*\(.*\)/, '');
+const at = (v, min, max) => Math.max(1.5, Math.min(98.5, ((v - min) / (max - min || 1)) * 100));
 
-const BLUE = '#2F64D9';
-const WARN = '#E3A008';
-const GREY = '#E4DFD3';
-
-/** Half-ring of ticks from min→max; colour by budget / likely; dashed needle at the budget. */
-function gauge({ min, max, budget, likely }) {
-  const W = 360;
-  const H = 190;
-  const cx = 180;
-  const cy = 176;
-  const r1 = 122;
-  const r2 = 148;
-  const N = 47;
-  const s = svg('svg', { width: W, height: H, viewBox: `0 0 ${W} ${H}`, class: 'ov-gauge-svg' });
-  const at = (v) => Math.PI * (1 - Math.max(0, Math.min(1, (v - min) / (max - min || 1)))); // left = min
-  for (let i = 0; i < N; i++) {
-    const v = min + ((max - min) * i) / (N - 1);
-    const a = Math.PI * (1 - i / (N - 1));
-    const over = likely != null && budget != null && likely > budget;
-    const colour = v <= Math.min(budget ?? Infinity, likely ?? Infinity) ? BLUE : over && v <= likely ? WARN : GREY;
-    s.append(
-      svg('line', {
-        x1: (cx + r1 * Math.cos(a)).toFixed(1),
-        y1: (cy - r1 * Math.sin(a)).toFixed(1),
-        x2: (cx + r2 * Math.cos(a)).toFixed(1),
-        y2: (cy - r2 * Math.sin(a)).toFixed(1),
-        stroke: colour,
-        'stroke-width': 4.5,
-        'stroke-linecap': 'round',
-      }),
-    );
-  }
-  if (budget != null) {
-    const a = at(budget);
-    s.append(svg('line', { x1: (cx + (r1 - 22) * Math.cos(a)).toFixed(1), y1: (cy - (r1 - 22) * Math.sin(a)).toFixed(1), x2: (cx + (r2 + 4) * Math.cos(a)).toFixed(1), y2: (cy - (r2 + 4) * Math.sin(a)).toFixed(1), stroke: '#1E1D1B', 'stroke-width': 1.5, 'stroke-dasharray': '2 3' }));
-  }
-  return s;
-}
-
+/** "What the listing doesn't say" rows — warnings first, each tappable. */
 function signals(b, investor) {
   const out = [];
   const s = b.supply ?? {};
@@ -66,7 +34,8 @@ function signals(b, investor) {
     const top = s.largest[0];
     out.push({
       tag: 'SUPPLY',
-      tone: s.build_to_rent_dwellings > 0 || s.new_dwellings_stated >= 300 ? 'warn' : 'good',
+      icon: 'building-2',
+      tone: s.build_to_rent_dwellings > 0 || s.new_dwellings_stated >= 300 ? 'risk' : 'good',
       text: `${top.dwellings} ${top.build_to_rent ? 'build-to-rent' : 'new homes'}, ${Math.round(top.km * 1000)} m`,
       value: `${s.new_dwellings_stated} homes`,
       ask: 'Is the new supply a dealbreaker?',
@@ -76,7 +45,8 @@ function signals(b, investor) {
   if (tl?.peak) {
     out.push({
       tag: 'TIMING',
-      tone: tl.peak.build_to_rent > 0 || tl.peak.dwellings >= 150 ? 'warn' : 'good',
+      icon: 'calendar-clock',
+      tone: tl.peak.build_to_rent > 0 || tl.peak.dwellings >= 150 ? 'risk' : 'good',
       text: `${tl.peak.build_to_rent > 0 ? 'Build-to-rent wave' : 'Supply peaks'} ~${tl.peak.year}`,
       value: `yr ${tl.peak.hold_year} of ${investor.holdYears ?? tl.years.length - 1}`,
       ask: 'When does the new supply land?',
@@ -84,19 +54,67 @@ function signals(b, investor) {
   }
   const { asking, likely_sale: likely, value } = b.price ?? {};
   if (asking && likely && likely !== asking) {
-    out.push({ tag: 'QUOTE', tone: likely > asking ? 'warn' : 'good', text: likely > asking ? 'Agency sells over quote' : 'Agency sells under quote', value: `${likely > asking ? '+' : '−'}${K(Math.abs(likely - asking))}`, ask: 'What should I offer?' });
+    out.push({ tag: 'QUOTE', icon: 'tag', tone: likely > asking ? 'risk' : 'good', text: likely > asking ? 'Agency sells over quote' : 'Agency sells under quote', value: `${likely > asking ? '+' : '−'}${K(Math.abs(likely - asking))}`, ask: 'What should I offer?' });
   }
   if (asking && value?.estimate) {
-    out.push({ tag: 'VALUE', tone: asking > value.estimate ? 'warn' : 'good', text: asking > value.estimate ? 'Asking above estimate' : 'Asking below estimate', value: `${asking > value.estimate ? '+' : '−'}${K(Math.abs(asking - value.estimate))}`, ask: "What's it really worth?" });
+    out.push({ tag: 'VALUE', icon: 'chart-combined', tone: asking > value.estimate ? 'risk' : 'good', text: asking > value.estimate ? 'Asking above estimate' : 'Asking below estimate', value: `${asking > value.estimate ? '+' : '−'}${K(Math.abs(asking - value.estimate))}`, ask: "What's it really worth?" });
   }
   if (b.rent?.weekly) {
-    out.push({ tag: 'RENT', tone: 'good', text: `${b.rent.comparables} ${b.property?.beds ?? ''}-bed comps ≤ 1 km`.replace(' -bed', ''), value: `$${b.rent.weekly}/wk`, ask: 'Will it earn enough?' });
+    const comps = b.rent.comparables;
+    const beds = b.property?.beds;
+    const text = comps != null ? `${comps} ${beds != null ? `${beds}-bed ` : ''}rental comps ≤ 1 km` : 'median of same-bed rentals nearby';
+    out.push({ tag: 'RENT', icon: 'key-round', tone: 'good', text, value: `$${b.rent.weekly}/wk`, ask: 'Will it earn enough?' });
   }
   for (const r of (b.risks ?? []).slice(0, 1)) {
-    out.push({ tag: 'RISK', tone: 'warn', text: ({ hv_power_line: 'High-voltage power line', flood: 'Flood zone', heritage: 'Heritage overlay', bushfire: 'Bushfire zone' })[r.name] ?? titleCase(r.name.replace(/_/g, ' ')), value: String(r.detail ?? '').replace(/^Not on property;\s*/i, '').replace(/^nearest\s+/i, '').replace(/\s*away$/, ''), ask: 'Any hazards I should check?' });
+    out.push({
+      tag: 'RISK',
+      icon: 'alert',
+      tone: 'risk',
+      text: ({ hv_power_line: 'High-voltage power line', flood: 'Flood zone', heritage: 'Heritage overlay', bushfire: 'Bushfire zone' })[r.name] ?? titleCase(r.name.replace(/_/g, ' ')),
+      value: String(r.detail ?? '').replace(/^Not on property;\s*/i, '').replace(/^nearest\s+/i, '').replace(/\s*away$/, ''),
+      ask: 'Any hazards I should check?',
+    });
   }
-  // warnings first
-  return out.sort((a, c) => (a.tone === c.tone ? 0 : a.tone === 'warn' ? -1 : 1));
+  return out.sort((a, c) => (a.tone === c.tone ? 0 : a.tone === 'risk' ? -1 : 1));
+}
+
+/** Horizontal price scale: teal interval to the likely sale, budget tick, three markers. */
+function priceScale(container, { min, max, budget, likely, asking, estimate }) {
+  const annot = h('div', 'ov-annot');
+  annot.append(h('span', 'ov-annot-good', 'Likely sale'), h('span', 'ov-annot-muted', 'Estimated value'));
+  const scale = h('div', 'ov-scale');
+  scale.append(h('div', 'ov-track'));
+  const fill = h('div', 'ov-fill');
+  fill.style.width = `${at(likely, min, max)}%`;
+  scale.append(fill);
+  if (budget != null) {
+    const tick = h('div', 'ov-tick');
+    tick.style.left = `${at(budget, min, max)}%`;
+    scale.append(tick);
+  }
+  const marker = (v, cls) => {
+    if (v == null) return;
+    const m = h('div', `ov-marker ${cls}`);
+    m.style.left = `${at(v, min, max)}%`;
+    scale.append(m);
+  };
+  marker(likely, 'ov-m-sale');
+  marker(asking, 'ov-m-ask');
+  marker(estimate, 'ov-m-est');
+  const bounds = h('div', 'ov-bounds');
+  bounds.append(h('span', null, K(min)), h('span', null, K(max)));
+  container.append(annot, scale, bounds);
+}
+
+/** Price breakdown rows (colour swatch · label (+sub) · value). */
+function breakdownRow(swClass, label, sub, value, valueClass) {
+  const row = h('div', 'ov-row');
+  row.append(h('div', `ov-sw ${swClass}`));
+  const main = h('div', 'ov-row-main');
+  main.append(h('div', 'ov-row-label', label));
+  if (sub) main.append(h('div', 'ov-row-sub', sub));
+  row.append(main, h('div', `ov-row-value ${valueClass ?? ''}`, value));
+  return row;
 }
 
 /**
@@ -109,83 +127,127 @@ export function renderOverview(b, investor = {}, { onAsk = () => {} } = {}) {
   const p = b.property ?? {};
   const price = b.price ?? {};
 
-  // header
+  // header — matched address + status pill
   const head = h('div', 'ov-head');
   const who = h('div', 'ov-who');
-  who.append(h('div', 'ov-address', shortAddress(p.address)), h('div', 'ov-id', [p.gnaf_id, p.beds != null && `${p.beds} bed`, p.parking != null && `${p.parking} car`].filter(Boolean).join(' · ')));
-  head.append(who, h('span', `ov-live ${b.meta?.test_data ? 'ov-test' : ''}`, b.meta?.test_data ? 'test data' : b.meta?.cached ? 'cached' : 'live'));
+  who.append(h('div', 'ov-address', shortAddress(p.address)));
+  const facts = h('div', 'ov-facts');
+  facts.append(h('span', null, p.gnaf_id ?? ''));
+  if (p.beds != null) {
+    const f = h('span', 'ov-fact');
+    icon(f, 'bed-double', 14);
+    f.append(h('span', null, `${p.beds} bed`));
+    facts.append(f);
+  }
+  if (p.baths != null) {
+    const f = h('span', 'ov-fact');
+    f.append(h('span', null, `${p.baths} bath`));
+    facts.append(f);
+  }
+  if (p.parking != null) {
+    const f = h('span', 'ov-fact');
+    icon(f, 'car-front', 14);
+    f.append(h('span', null, `${p.parking} car`));
+    facts.append(f);
+  }
+  who.append(facts);
+  const pill = h('span', `ov-pill ${b.meta?.test_data ? 'ov-test' : b.meta?.cached ? 'ov-cache' : ''}`, b.meta?.test_data ? 'Test' : b.meta?.cached ? 'Cached' : 'Live');
+  head.append(who, pill);
   root.append(head);
 
-  // gauge
   const budget = investor.budget ?? null;
   const likely = price.likely_sale ?? price.asking ?? price.value?.estimate ?? null;
-  if (likely) {
-    const pts = [price.value?.low, price.value?.estimate, price.asking, likely, budget].filter((x) => x != null);
-    const min = Math.floor((Math.min(...pts) * 0.95) / 50000) * 50000;
-    const max = Math.ceil((Math.max(...pts) * 1.04) / 50000) * 50000;
-    const g = h('div', 'ov-gauge');
-    g.append(gauge({ min, max, budget, likely }));
-    const centre = h('div', 'ov-centre');
-    const diff = budget != null ? likely - budget : null;
-    const sub = h('div', 'ov-sub', `${price.likely_sale ? 'likely sale' : price.asking ? 'asking' : 'estimate'}`);
-    if (diff != null) sub.append(' · ', h('span', diff > 0 ? 'ov-warn-ink' : 'ov-blue-ink', `${K(Math.abs(diff))} ${diff > 0 ? 'over' : 'under'} budget`));
-    centre.append(h('div', 'ov-big', K(likely)), sub);
-    g.append(centre, h('div', 'ov-end ov-min', K(min)), h('div', 'ov-end ov-max', K(max)));
-    root.append(g);
 
-    // legend
-    const legend = h('div', 'ov-legend');
-    const row = (swatch, label, meta, value, cls = '') => {
-      const r = h('div', 'ov-legend-row');
-      const l = h('div', 'ov-legend-label', label);
-      if (meta) l.append(' ', h('span', 'ov-meta', meta));
-      r.append(h('span', `ov-sw ov-sw-${swatch}`), l, h('div', `ov-legend-value ${cls}`, value));
-      return r;
-    };
-    if (price.value?.estimate) legend.append(row('ink', 'Estimated value', price.value.confidence != null ? `AVM · conf ${price.value.confidence}` : 'recent sales nearby', K(price.value.estimate)));
-    if (price.asking) legend.append(row('muted', 'Asking', price.asking_source && price.asking_source !== 'agency quote' && price.asking_source !== 'for-sale record' ? price.asking_source : null, K(price.asking)));
-    if (budget != null) legend.append(row('dash', 'Your budget', null, K(budget)));
+  // sale & budget analysis card
+  if (likely) {
+    const card = h('div', 'ov-card');
+    const pts = [price.value?.low, price.value?.estimate, price.asking, likely, budget].filter((x) => x != null);
+    const min = Math.floor((Math.min(...pts) * 0.97) / 50000) * 50000;
+    const max = Math.ceil((Math.max(...pts) * 1.02) / 50000) * 50000;
+
+    // headline: likely sale (or asking/estimate) + budget badge
+    const sale = h('div', 'ov-sale');
+    const big = h('div');
+    big.append(h('div', 'ov-k', price.likely_sale ? 'LIKELY SALE' : price.asking ? 'ASKING' : 'ESTIMATED VALUE'), h('div', 'ov-big', K(likely)));
+    sale.append(big);
+    const side = h('div', 'ov-sale-side');
+    if (budget != null) {
+      const diff = budget - likely;
+      const badge = h('span', `ov-badge ${diff < 0 ? 'ov-over' : ''}`);
+      if (diff >= 0) icon(badge, 'check', 14);
+      badge.append(h('span', null, `${K(Math.abs(diff))} ${diff >= 0 ? 'under' : 'over'} budget`));
+      side.append(badge, h('span', 'ov-budget-line', `Your budget · ${K(budget)}`));
+    }
+    sale.append(side);
+    card.append(sale);
+
+    // the price scale
+    const scalewrap = h('div', 'ov-scalewrap');
+    priceScale(scalewrap, { min, max, budget, likely, asking: price.asking, estimate: price.value?.estimate });
+    card.append(scalewrap);
+
+    // breakdown
+    card.append(h('hr', 'ov-hr'));
+    if (price.value?.estimate) {
+      card.append(breakdownRow('ov-sw-ink', 'Estimated value', price.value.confidence != null ? `AVM · conf ${price.value.confidence}` : 'recent sales nearby', K(price.value.estimate)));
+    }
+    if (price.asking) card.append(breakdownRow('ov-sw-risk', 'Asking', null, K(price.asking), 'ov-risk-ink'));
+    if (budget != null) card.append(breakdownRow('ov-sw-muted', 'Your budget', null, K(budget), 'ov-muted-ink'));
     if (price.likely_sale) {
       const a = price.agency;
-      legend.append(row('warn', 'Likely sale', a ? `agency +${a.median_over_quote_pct}% over quote · ${Math.round(a.underquote_rate_pct)}%` : null, K(price.likely_sale), 'ov-warn-ink'));
+      card.append(breakdownRow('ov-sw-good', 'Likely sale', a ? `agency ${a.median_over_quote_pct > 0 ? '+' : '−'}${Math.abs(Math.round(a.median_over_quote_pct))}% over quote · ${Math.round(a.underquote_rate_pct)}% of sales` : null, K(price.likely_sale), 'ov-good-ink'));
     }
-    root.append(legend);
+    root.append(card);
   }
 
-  // readouts
-  const readouts = h('div', 'ov-readouts');
-  const readout = (label, value, sub, tone) => {
-    const c = h('div', 'ov-readout');
-    const v = h('div', 'ov-readout-value');
-    v.append(h('span', `ov-dot ov-dot-${tone}`), h('span', 'ov-num', value));
-    c.append(h('div', 'ov-readout-label', label), v, h('div', 'ov-meta', sub));
-    return c;
-  };
+  // the numbers — dark band
   const y = b.returns?.gross_yield_pct_at_asking ?? b.returns?.gross_yield_pct_at_likely;
-  readouts.append(readout('Gross yield', y != null ? `${y}%` : 'n/a', b.market?.suburb_unit_yield_pct != null ? `suburb ${b.market.suburb_unit_yield_pct}%` : '', y != null && investor.minYield != null && y >= investor.minYield ? 'blue' : 'warn'));
   const net = b.weekly_cost?.net_before_tax;
-  readouts.append(readout('Weekly cost', net == null ? 'n/a' : `${net > 0 ? '−' : '+'}$${Math.abs(Math.round(net))}`, b.returns?.price_basis ? `at ${K(b.returns.price_basis)} · pre-tax` : '', net != null && net <= 0 ? 'blue' : 'warn'));
   const vac = b.market?.unit_vacancy_pct;
-  readouts.append(readout('Unit vacancy', vac != null ? `${vac}%` : 'n/a', 'suburb units', vac != null && vac < 2 ? 'blue' : 'warn'));
-  root.append(readouts);
+  if (y != null || net != null || vac != null) {
+    const sec = h('div');
+    sec.append(h('div', 'ov-section-head', 'The numbers'));
+    const band = h('div', 'ov-numbers');
+    const metric = (label, barCls, value, sub) => {
+      const m = h('div', 'ov-num');
+      m.append(h('div', 'ov-num-label', label));
+      const v = h('div', 'ov-num-value');
+      v.append(h('span', `ov-num-bar ${barCls}`), h('span', null, value));
+      m.append(v, h('div', 'ov-num-sub', sub));
+      return m;
+    };
+    band.append(metric('Gross yield', y != null && investor.minYield != null && y >= investor.minYield ? 'ov-good' : 'ov-risk', y != null ? `${y}%` : 'n/a', b.market?.suburb_unit_yield_pct != null ? `suburb ${b.market.suburb_unit_yield_pct}%` : ''));
+    band.append(h('div', 'ov-num-divider'));
+    band.append(metric('Weekly cost', net != null && net <= 0 ? 'ov-good' : 'ov-neutral', net == null ? 'n/a' : `${net > 0 ? '−' : '+'}$${Math.abs(Math.round(net))}`, b.returns?.price_basis ? `at ${K(b.returns.price_basis)} · pre-tax` : ''));
+    band.append(h('div', 'ov-num-divider'));
+    band.append(metric('Unit vacancy', vac != null && vac < 2 ? 'ov-good' : 'ov-risk', vac != null ? `${vac}%` : 'n/a', 'suburb units'));
+    sec.append(band);
+    root.append(sec);
+  }
 
-  // signals
+  // what the listing doesn't say — tappable insight rows
   const sig = signals(b, investor);
   if (sig.length) {
-    const box = h('div', 'ov-signals');
-    const title = h('div', 'ov-signals-title');
-    title.append(h('span', null, "What the listing doesn't say"), h('span', 'ov-meta', 'tap to dig in'));
-    const list = h('div', 'ov-signal-list');
+    const sec = h('div');
+    const headRow = h('div', 'ov-section-head');
+    headRow.append(h('span', null, "What the listing doesn't say"), h('span', 'ov-section-note', 'Tap to dig in'));
+    const list = h('div', 'ov-insights');
     for (const s of sig) {
-      const r = h('button', `ov-signal ov-signal-${s.tone}`);
+      const r = h('button', `ov-insight ov-${s.tone}`);
       r.type = 'button';
       r.title = s.ask;
-      r.append(h('span', 'ov-bar'), h('span', 'ov-tag', s.tag), h('span', 'ov-text', s.text), h('span', 'ov-value', s.value), h('span', 'ov-chev', '›'));
       r.addEventListener?.('click', () => onAsk(s.ask));
+      const tile = h('span', 'ov-symbol');
+      tile.innerHTML = iconSvg(s.icon, 17); // static strings only
+      r.append(tile);
+      const main = h('span', 'ov-insight-main');
+      main.append(h('span', 'ov-insight-tag', s.tag), h('span', 'ov-insight-text', s.text));
+      r.append(main, h('span', 'ov-insight-value', s.value));
+      icon(r, 'chevron-right', 13, 'ov-chev');
       list.append(r);
     }
-    box.append(title, list);
-    root.append(box);
+    sec.append(headRow, list);
+    root.append(sec);
   }
   return root;
 }

@@ -69,12 +69,8 @@ export function useAgentThread() {
         });
         // re-read the transcript: it is the only state
         await load(threadId);
-        const u = result.usage;
-        setTurnMeta(
-          `${result.status} · ${result.steps} steps · ${u.input_tokens + u.output_tokens} tokens${
-            u.cost ? ` · $${u.cost.toFixed(4)}` : ''
-          } · ${((Date.now() - started) / 1000).toFixed(1)}s`,
-        );
+        const secs = ((Date.now() - started) / 1000).toFixed(1);
+        setTurnMeta(`${secs}s · ${result.steps} ${result.steps === 1 ? 'step' : 'steps'}`);
         if (result.status === 'failed') setTurnError(`Failed: ${result.failure?.message ?? result.failure_reason}`);
       } catch (e) {
         setLiveText(null);

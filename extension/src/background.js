@@ -14,7 +14,8 @@ chrome.action.onClicked.addListener(async (tab) => {
   try {
     await chrome.tabs.sendMessage(tab.id, { type: 'fineprint:toggle' });
   } catch {
-    await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['src/content/inject.js'] });
+    // path must match manifest.content_scripts.js — the build puts it at content/inject.js
+    await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['content/inject.js'] });
     await chrome.tabs.sendMessage(tab.id, { type: 'fineprint:toggle' }).catch(() => {});
   }
 });

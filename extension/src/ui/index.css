@@ -1,21 +1,38 @@
 @import 'tailwindcss';
 
-/* Fine Print palette — the same tokens as the pre-Tailwind ui.css, exposed as
-   utilities: bg-paper, text-ink, border-line, text-muted, bg-brand, … */
+/* Fine Print palette — from the Figma redesign (node 2:764): deep slate-teal
+   night chrome, cool grey-blue canvas, teal good / terracotta risk semantics.
+   Utilities: bg-paper, text-ink, border-line, text-muted, bg-brand, bg-night, … */
 @theme {
-  --color-paper: #fbfaf6;
+  --color-paper: #eff3f5;
   --color-card: #ffffff;
-  --color-line: #e6e1d6;
-  --color-ink: #1e1d1b;
-  --color-muted: #8c877d;
-  --color-brand: #2f64d9;
-  --color-warn: #e3a008;
-  --color-warn-ink: #9a6a00;
-  --color-toolbg: #f6f3ec;
-  --color-closebg: #f3f0e8;
-  --color-errorbg: #fdf3d7;
-  --font-sans: Geist, -apple-system, system-ui, sans-serif;
+  --color-line: #dae3e7;
+  --color-ink: #1b303a;
+  --color-muted: #687c85;
+  --color-brand: #087e68;
+
+  --color-night: #172c35;
+  --color-night-line: #3f5662;
+  --color-night-text: #f3f8fa;
+  --color-night-muted: #b6c7ce;
+
+  --color-good: #087e68;
+  --color-good-bg: #e5f3ef;
+  --color-good-soft: #63c3a9;
+  --color-risk: #ae6257;
+  --color-risk-bg: #faeeea;
+  --color-risk-soft: #d99587;
+
+  /* legacy aliases (older components) — now teal/risk semantics */
+  --color-warn: #ae6257;
+  --color-warn-ink: #ae6257;
+  --color-toolbg: #f0f4f5;
+  --color-closebg: #e7edee;
+  --color-errorbg: #faeeea;
+
+  --font-sans: Inter, -apple-system, system-ui, sans-serif;
   --font-mono: 'Geist Mono', ui-monospace, monospace;
+  --font-voice: Inter, -apple-system, system-ui, sans-serif;
 }
 
 @layer base {
@@ -23,12 +40,11 @@
     @apply bg-paper font-sans text-[13px] text-ink;
   }
 
-  /* global button look from ui.css — components override per use */
+  /* global button look — components override per use */
   button {
     @apply cursor-pointer rounded-lg border border-line bg-card px-2.5 py-[5px] text-[13px] text-ink;
   }
 
-  /* global input/select look from ui.css */
   input,
   select,
   textarea {
@@ -37,6 +53,26 @@
 
   input,
   select {
-    @apply rounded-lg border border-line bg-paper px-[9px] py-[7px];
+    @apply rounded-lg border border-line bg-card px-[9px] py-[7px];
+  }
+
+  /* keyboard focus is visible everywhere */
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 1px;
+    border-radius: 4px;
+  }
+
+  button:disabled {
+    @apply cursor-not-allowed;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }

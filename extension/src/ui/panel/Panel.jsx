@@ -84,7 +84,7 @@ export default function Panel() {
   };
 
   const overview = !listing ? null : brief.status === 'loading' || brief.status === 'idle' ? (
-    <div className={META}>Reading this listing…</div>
+    <div className={`${META} meta-pulse`}>Reading this listing…</div>
   ) : brief.status === 'error' ? (
     <div className={META}>
       {brief.res.reason === 'no_match' ? `No exact match — ${brief.res.message}${brief.res.hint ? ` (${brief.res.hint})` : ''}` : brief.res.reason === 'no_address' ? brief.res.message : `Couldn't load Microburbs data — ${brief.res.message}`}
