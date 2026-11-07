@@ -4,27 +4,29 @@ Two parts: a **45-second team pitch** (just us talking, no screen) and a **short
 
 ---
 
-## Part 1 · 45-second pitch (~125 words — trim if a read-through runs over)
+## Part 1 · 45-second pitch (~120 words)
 
-The problem is two bad options. One idea per speaker; speak slower than feels natural.
+Problem → product → business. One idea per speaker; speak slower than feels natural. Slides follow along (deck slides 1–7, notes carry these lines), but the pitch works with no screen at all.
 
-**Jake — the problem (~25s)**
+**Jake — the problem (~20s)** · slides 1–4
 
 > If you're buying an investment property today, you've got two options.
 >
-> One: gut feel. You scroll REA and Domain, find something you like, and your only evidence is what the selling agent tells you — and they want you to buy it.
+> Gut feel: scroll REA and Domain and trust the selling agent, who wants you to buy.
 >
-> Two: you become a super-user. A spreadsheet, RP Data for rent estimates, risk overlays from one site, development applications from another.
+> Or become a super-user: a spreadsheet, RP Data, risk overlays from one site, development applications from another.
 >
 > Either way, you're not making an informed decision, quickly.
 
-**Carlos — what we built (~12s)**
+**Carlos — what we built (~12s)** · slide 5
 
-> Fine Print puts that research on the listing itself, on REA and Domain: the real price, rent, weekly cost, risks and incoming supply, from Microburbs data.
+> Fine Print puts that research on the listing itself. Press F: the real price, what it'll rent for from our own model, your weekly cost, and when new supply lands.
 
-**Yong — why it's different (~10s)**
+**Yong — the business (~13s)** · slides 6–7
 
-> And it's your own intelligent investment analyst. It knows your brief, answers your questions, and builds a shortlist you can actually decide from. Fine Print: read it before you buy it.
+> It's your own intelligent investment analyst. Free to read, paid for power users, and 2.3 million Australians own a rental. At scale, it's live demand data for developers. Fine Print: read it before you buy it.
+
+Then: slide 8, "Press F.", and into the demo. Slide 9 (take-up: no sign-up, both portals, 13M on REA vs ~10K for the leading extension) is a Q&A backup.
 
 ---
 
@@ -41,8 +43,7 @@ The demo shows the third way: the super-user's research, in seconds, on the list
 
 ## Business case (slide 8 · say it if there's room, always in Q&A)
 
-**One line for the 45 seconds** (Yong, before the closer, ~8s):
-> Free to read, paid for power users, and at scale, real demand data for developers.
+**In the 45 seconds** it's Yong's line (slide 6): free to read, paid for power users, 2.3 million Australians own a rental, and at scale live demand data for developers.
 
 **1. Investor subscription: free to read, paid for power users.** Pricing is still to be worked out; the numbers below are illustrative at **$15 a month ($180 a year)**.
 
