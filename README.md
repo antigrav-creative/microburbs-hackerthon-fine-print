@@ -131,7 +131,7 @@ More detail on the agent runtime and code layout: [`extension/README.md`](extens
 | `extension/` | The Chrome extension (MV3): panel, agent, shortlist, settings |
 | `address-pipeline/` | Address parsing and exact GNAF matching |
 | `pitch/` | [45-second pitch video](pitch/45s.mp4) · [demo video](pitch/demo.mp4) · pitch script, demo run order, business case · [slide deck](pitch/deck/index.html) |
-| `docs/` | [Rent model report](docs/rent-model-report.html) (Task 4): method, validation, what drives the prediction |
+| `docs/` | Task 4 (rent model): [report](docs/rent-model-report.html) (method, validation, what drives the prediction) · [pitch video](docs/rent-model-pitch.mp4) (40 s) |
 | `design/` | Design references |
 
 ---
