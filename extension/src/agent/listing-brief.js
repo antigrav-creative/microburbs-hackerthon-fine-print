@@ -9,6 +9,7 @@
 // Microburbs is the source of truth for every number here. Cached per GNAF.
 
 import { publicHousingAround } from './public-housing.js';
+import { modelRent } from './rent-model.js';
 import { tool, ToolError } from '../runtime/index.js';
 import { AllowlistHttpClient } from '../runtime/tools/http.js';
 import { SOURCES } from './microburbs-tools.js';
@@ -115,9 +116,10 @@ const isBuildToRent = (desc) => /build[- ]to[- ]rent|\bbtr\b/i.test(String(desc 
 /**
  * Pure: raw Microburbs responses → the brief. Exported for tests.
  * @param {Object} raw  { match, avm, quoting, history, risks, basics, sales, nearby, market, strata, vacancy, rentals[], das[] }
- * @param {Object} o    { investor: {budget, deposit, minYield}, rate, ratesInsuranceWeekly, radiusKm }
+ *                      (+ page_price: the sale price the page shows, page_rent: the weekly rent a rental listing shows)
+ * @param {Object} o    { investor: {budget, deposit, minYield}, rate, ratesInsuranceWeekly, radiusKm, publicHousing, rentModel }
  */
-export function computeBrief(raw, { investor = {}, rate = 0.06, ratesInsuranceWeekly = 45, radiusKm = 1, publicHousing = null } = {}) {
+export function computeBrief(raw, { investor = {}, rate = 0.06, ratesInsuranceWeekly = 45, radiusKm = 1, publicHousing = null, rentModel = null } = {}) {
   const here = raw.nearby?.center_lat != null ? { lat: raw.nearby.center_lat, lng: raw.nearby.center_lng } : null;
   const beds = raw.basics?.bed_count ?? null;
   const within = (lat, lng) => (here && lat != null && lng != null ? haversineKm(here, { lat, lng }) : null);
@@ -147,6 +149,22 @@ export function computeBrief(raw, { investor = {}, rate = 0.06, ratesInsuranceWe
     suburb_median_unit: raw.market?.median_rent?.unit ?? null,
   };
 
+  // --- the rent model (bundled predictions for City of Sydney flats): when it covers this
+  // flat its rent drives yield + weekly cost; otherwise the comparables median does
+  const model = modelRent(raw.match?.id ?? null, raw.basics?.parking_count ?? null, rentModel);
+  const rentUsed = model?.covered ? model.weekly : rent.weekly;
+  const rentSource = model?.covered ? 'model' : rent.weekly != null ? 'comparables' : null;
+  const pageRent = raw.page_rent ?? null; // a rental listing's asking rent
+  const rentListing = pageRent
+    ? {
+        asking_weekly: pageRent.weekly ?? null,
+        listing_price_text: pageRent.text ?? null,
+        model_weekly: model?.covered ? model.weekly : null,
+        vs_model_pct: model?.covered && pageRent.weekly ? round(((pageRent.weekly - model.weekly) / model.weekly) * 100, 0.1) : null,
+        comparables_weekly: rent.weekly,
+      }
+    : null;
+
   // --- price points (each with where it came from; Microburbs first, then fallbacks)
   // recent same-bed sales nearby (12 months) — also the value fallback below
   const yearAgo = new Date(Date.now() - 365 * 864e5).toISOString().slice(0, 10);
@@ -166,13 +184,13 @@ export function computeBrief(raw, { investor = {}, rate = 0.06, ratesInsuranceWe
       : null;
   const basisPrice = likely ?? asking ?? value?.estimate ?? null;
 
-  const yieldAt = (p) => (p && rent.weekly ? round(((rent.weekly * 52) / p) * 100, 0.01) : null);
+  const yieldAt = (p) => (p && rentUsed ? round(((rentUsed * 52) / p) * 100, 0.01) : null);
   const strataWeekly = raw.strata?.median_levy_annual ? round(raw.strata.median_levy_annual / 52, 1) : null;
   const deposit = investor.deposit ?? null;
   const loan = basisPrice && deposit != null ? Math.max(0, basisPrice - deposit) : null;
   const interestWeekly = loan != null ? round((loan * rate) / 52, 1) : null;
   const weeklyCost =
-    interestWeekly != null && rent.weekly != null ? round(interestWeekly + (strataWeekly ?? 0) + ratesInsuranceWeekly - rent.weekly, 1) : null;
+    interestWeekly != null && rentUsed != null ? round(interestWeekly + (strataWeekly ?? 0) + ratesInsuranceWeekly - rentUsed, 1) : null;
 
   // --- supply pipeline within the radius
   const daSeen = new Set();
@@ -228,7 +246,11 @@ export function computeBrief(raw, { investor = {}, rate = 0.06, ratesInsuranceWe
       last_sold: (raw.history?.sale_history ?? []).find((s) => s.type === 'Sold') ?? null,
     },
     rent,
+    rent_model: model,
+    ...(rentListing ? { rent_listing: rentListing } : {}),
     returns: {
+      rent_weekly_used: rentUsed,
+      rent_source: rentSource,
       price_basis: basisPrice,
       price_basis_is: likely ? 'likely_sale' : asking ? 'asking' : value ? 'estimated_value' : null,
       gross_yield_pct_at_asking: yieldAt(asking),
@@ -241,7 +263,8 @@ export function computeBrief(raw, { investor = {}, rate = 0.06, ratesInsuranceWe
       interest: interestWeekly,
       strata: strataWeekly,
       rates_insurance: ratesInsuranceWeekly,
-      rent: rent.weekly,
+      rent: rentUsed,
+      rent_source: rentSource,
       assumptions: `interest-only at ${(rate * 100).toFixed(1)}% on price minus $${deposit?.toLocaleString('en-AU') ?? '?'} deposit; strata = suburb median levy`,
     },
     supply: {
@@ -336,7 +359,7 @@ const projectDas = (d) => (d ?? []).map((x) => ({ area_name: x.area_name, descri
  * Fetch + compute a brief for an address. Throws a ToolError-shaped err on no match.
  * @param {Object} o  { address | parts, source, secretProvider, investor, fetch?, onProgress? }
  */
-export async function fetchListingBrief({ address = null, parts = null, pagePrice = null, source = 'api', secretProvider, investor, fetch: fetchImpl, onProgress = () => {}, publicHousing = null }) {
+export async function fetchListingBrief({ address = null, parts = null, pagePrice = null, pageRent = null, source = 'api', secretProvider, investor, fetch: fetchImpl, onProgress = () => {}, publicHousing = null, rentModel = null }) {
   const s = SOURCES[source];
   const http = new AllowlistHttpClient([s.host], { timeoutS: 20, fetch: fetchImpl, credentials: s.auth ? 'omit' : 'include' });
   const headers = s.auth ? { Authorization: `Bearer ${await secretProvider.get('microburbs')}` } : {};
@@ -389,7 +412,7 @@ export async function fetchListingBrief({ address = null, parts = null, pagePric
 
   // the brief's maths depends on the investor (deposit, budget, min yield) — key the cache on it
   // the maths depends on the investor and on the listing's own price — key the cache on both
-  const cacheKey = `brief:v3:${publicHousing ? 'ph' : ''}:${match.id}:${investor?.budget ?? ''}:${investor?.deposit ?? ''}:${investor?.minYield ?? ''}:${pagePrice?.mid ?? ''}`;
+  const cacheKey = `brief:v4:${publicHousing ? 'ph' : ''}:${rentModel ? 'rm' : ''}:${match.id}:${investor?.budget ?? ''}:${investor?.deposit ?? ''}:${investor?.minYield ?? ''}:${pagePrice?.mid ?? ''}:${pageRent?.weekly ?? ''}`;
   const cached = await cacheGet(cacheKey);
   if (cached) return { ...cached, meta: { ...cached.meta, cached: true } };
 
@@ -410,7 +433,7 @@ export async function fetchListingBrief({ address = null, parts = null, pagePric
     Promise.all(subs.map((sub) => bySuburb(sub, 'development/da-list', null, projectDas))),
   ]);
 
-  const brief = computeBrief({ match, avm, quoting, history, risks, basics, sales, nearby, market, strata, vacancy, rentals, das, page_price: pagePrice }, { investor, publicHousing });
+  const brief = computeBrief({ match, avm, quoting, history, risks, basics, sales, nearby, market, strata, vacancy, rentals, das, page_price: pagePrice, page_rent: pageRent }, { investor, publicHousing, rentModel });
   brief.meta = { suburbs_searched: subs, fetched_ms: Date.now() - t0, fetched_at: new Date().toISOString(), source: 'Microburbs API', ...(failed.length ? { partial: failed } : {}) };
   // a partial brief (e.g. rate-limited) is shown but never cached — the next open retries
   if (!failed.length) await cacheSet(cacheKey, brief);
@@ -418,19 +441,19 @@ export async function fetchListingBrief({ address = null, parts = null, pagePric
 }
 
 /** The tool the agent calls. */
-export function listingBriefTool({ source, secretProvider, investor, onProgress, memory = null, listing = null, publicHousing = null }) {
+export function listingBriefTool({ source, secretProvider, investor, onProgress, memory = null, listing = null, publicHousing = null, rentModel = null }) {
   return tool({
     name: 'get_listing_brief',
     label: 'Pulling the Microburbs brief for this property',
     description:
-      'ONE call that returns everything for the first read of a listing: matched GNAF address, asking/likely sale/estimated value, agency quoting record, rent estimate from nearby same-bed rentals, gross yield, weekly cost before tax, new dwellings in development applications within 1 km, competing listings, recent nearby sales, suburb market and hazards. All figures are computed from Microburbs data. Use this first; use the individual tools only to dig deeper.',
+      'ONE call that returns everything for the first read of a listing: matched GNAF address, asking/likely sale/estimated value, agency quoting record, rent estimate from nearby same-bed rentals, the Fine Print rent model prediction for City of Sydney flats (rent_model: with/without a car space, the parking premium; when it covers the flat it drives yield and weekly cost — returns.rent_source says which), gross yield, weekly cost before tax, new dwellings in development applications within 1 km, competing listings, recent nearby sales, suburb market and hazards. All figures are computed from Microburbs data except rent_model (our own model, labelled as such). Use this first; use the individual tools only to dig deeper.',
     input_schema: {
       type: 'object',
       properties: { address: { type: 'string', description: 'Full address including unit number, e.g. "Unit 38, 3 Victoria Park Parade, Zetland NSW 2017"' } },
       required: ['address'],
     },
     execute: async ({ address }) => {
-      const brief = await fetchListingBrief({ address, source, secretProvider, investor, onProgress, publicHousing });
+      const brief = await fetchListingBrief({ address, source, secretProvider, investor, onProgress, publicHousing, rentModel });
       // Remember every analysed property (with where we saw it) for later recall.
       const seenOn = listing ? { url: listing.url ?? null, image: listing.page?.image ?? null, title: listing.page?.heading ?? listing.title ?? null } : {};
       await memory?.save(brief, seenOn).catch((e) => console.warn('[fine-print] could not save property', e));

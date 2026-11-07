@@ -8,7 +8,8 @@
     "test": "node --test \"test/**/*.test.js\"",
     "build": "vite build && vite build --config vite.content.config.js",
     "watch": "node scripts/watch.mjs",
-    "prepare:public-housing": "node scripts/prepare-public-housing.mjs"
+    "prepare:public-housing": "node scripts/prepare-public-housing.mjs",
+    "prepare:rent-model": "node scripts/prepare-rent-model.mjs"
   },
   "engines": {
     "node": ">=20"

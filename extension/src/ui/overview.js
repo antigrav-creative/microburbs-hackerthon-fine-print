@@ -145,6 +145,19 @@ function signals(b, investor) {
   if (b.rent?.weekly) {
     out.push({ tag: 'RENT', tone: 'good', text: `${plural(b.rent.comparables, 'similar rental')} within 1 km`, value: `$${b.rent.weekly}/wk`, ask: 'Will it earn enough?', tip: `Median of ${b.rent.comparables} ${b.property?.beds ?? ''}-bed units advertised for rent within 1 km: $${b.rent.weekly}/wk (middle half $${b.rent.low}–${b.rent.high}).${b.rent.this_property_last ? ` This property last advertised at $${b.rent.this_property_last.weekly}/wk (${b.rent.this_property_last.date}).` : ''}` });
   }
+  const m = b.rent_model;
+  if (m?.covered) {
+    const rl = b.rent_listing;
+    const carText = m.scenario === 'with' ? 'with car space' : m.scenario === 'without' ? 'no car space' : 'car space unknown';
+    const both = `$${m.with_car}/wk with a car space, $${m.without_car}/wk without (parking premium $${m.premium}/wk)`;
+    const acc = `Typically within ~$${m.typical_error}/wk; ${m.within_100_pct}% of held-out adverts within $100.`;
+    if (rl?.vs_model_pct != null) {
+      const over = rl.vs_model_pct > 0;
+      out.push({ tag: 'MODEL', tone: rl.vs_model_pct > 10 ? 'warn' : 'good', text: `Asking ${Math.abs(rl.vs_model_pct)}% ${over ? 'above' : 'below'} our model`, value: `$${m.weekly}/wk`, ask: 'Is the asking rent fair?', tip: `Our rent model's estimate for ${m.period}: ${both}. This listing asks $${rl.asking_weekly}/wk. ${acc}` });
+    } else {
+      out.push({ tag: 'MODEL', tone: 'good', text: `Our rent model · ${carText}`, value: `$${m.weekly}/wk`, ask: 'What is the parking worth?', tip: `Our rent model's estimate for ${m.period}: ${both}.${m.scenario ? '' : ' Car spaces unknown, so yield uses the without-car figure.'} It drives the yield and weekly cost here. ${acc}` });
+    }
+  }
   for (const r of (b.risks ?? []).slice(0, 1)) {
     out.push({ tag: 'RISK', tone: 'warn', text: ({ hv_power_line: 'High-voltage power line', flood: 'Flood zone', heritage: 'Heritage overlay', bushfire: 'Bushfire zone', public_housing: 'Public housing' })[r.name] ?? titleCase(r.name.replace(/_/g, ' ')), value: String(r.detail ?? '').replace(/^Not on property;\s*/i, '').replace(/^nearest\s+/i, '').replace(/\s*away$/, ''), ask: 'Any hazards I should check?', tip: `${r.detail}. ${r.on_property ? 'On the title itself.' : 'Not on the title, but close — check the strata report and a site visit.'}` });
   }
@@ -172,7 +185,7 @@ export function renderOverview(b, investor = {}, { onAsk = () => {} } = {}) {
   // gauge
   const budget = investor.budget ?? null;
   const likely = price.likely_sale ?? price.asking ?? price.value?.estimate ?? null;
-  if (likely) {
+  if (likely && !b.rent_listing) {
     const pts = [price.value?.low, price.value?.estimate, price.asking, likely, budget].filter((x) => x != null);
     const min = Math.floor((Math.min(...pts) * 0.95) / 50000) * 50000;
     const max = Math.ceil((Math.max(...pts) * 1.04) / 50000) * 50000;
@@ -225,18 +238,33 @@ export function renderOverview(b, investor = {}, { onAsk = () => {} } = {}) {
     return c;
   };
   const y = b.returns?.gross_yield_pct_at_asking ?? b.returns?.gross_yield_pct_at_likely;
+  const rentUsed = b.returns?.rent_weekly_used ?? b.rent?.weekly;
+  const rentFrom = b.returns?.rent_source === 'model' ? 'our rent model' : 'similar rentals nearby';
   const r0 = readouts.children.length;
-  readouts.append(readout('Gross yield', y != null ? `${y}%` : 'n/a', b.market?.suburb_unit_yield_pct != null ? `suburb ${b.market.suburb_unit_yield_pct}%` : '', y != null && investor.minYield != null && y >= investor.minYield ? 'blue' : 'warn'));
-  const net = b.weekly_cost?.net_before_tax;
-  readouts.append(readout('Weekly cost', net == null ? 'n/a' : `${net > 0 ? '−' : '+'}$${Math.abs(Math.round(net))}`, b.returns?.price_basis ? `at ${K(b.returns.price_basis)} · pre-tax` : '', net != null && net <= 0 ? 'blue' : 'warn'));
+  const rl = b.rent_listing;
+  if (rl) {
+    // a rental listing: judge the asking rent, no purchase maths
+    readouts.append(readout('Asking rent', rl.asking_weekly != null ? `$${rl.asking_weekly}` : 'n/a', rl.asking_weekly != null ? 'per week' : 'not shown', 'blue'));
+    readouts.append(readout('Rent model', rl.model_weekly != null ? `$${rl.model_weekly}` : 'n/a', rl.vs_model_pct != null ? `asking ${rl.vs_model_pct > 0 ? '+' : ''}${rl.vs_model_pct}%` : rl.model_weekly != null ? 'per week' : 'no estimate', rl.vs_model_pct != null && rl.vs_model_pct <= 10 ? 'blue' : 'warn'));
+  } else {
+    readouts.append(readout('Gross yield', y != null ? `${y}%` : 'n/a', b.market?.suburb_unit_yield_pct != null ? `suburb ${b.market.suburb_unit_yield_pct}%` : '', y != null && investor.minYield != null && y >= investor.minYield ? 'blue' : 'warn'));
+    const net = b.weekly_cost?.net_before_tax;
+    readouts.append(readout('Weekly cost', net == null ? 'n/a' : `${net > 0 ? '−' : '+'}$${Math.abs(Math.round(net))}`, b.returns?.price_basis ? `at ${K(b.returns.price_basis)} · pre-tax` : '', net != null && net <= 0 ? 'blue' : 'warn'));
+  }
   const vac = b.market?.unit_vacancy_pct;
   readouts.append(readout('Unit vacancy', vac != null ? `${vac}%` : 'n/a', 'suburb units', vac != null && vac < 2 ? 'blue' : 'warn'));
   const [ry, rw, rv] = [...readouts.children].slice(r0);
   const w = b.weekly_cost ?? {};
-  tip(ry, `Weekly rent × 52 ÷ asking price${b.rent?.weekly ? ` = $${b.rent.weekly} × 52 ÷ ${K(price.asking ?? b.returns?.price_basis)}` : ''}${b.returns?.gross_yield_pct_at_likely != null ? `; ${b.returns.gross_yield_pct_at_likely}% at the likely sale` : ''}. Your minimum is ${investor.minYield}%. Before costs.`, 'Gross yield');
-  tip(rw, w.net_before_tax != null ? `Per week before tax at ${K(b.returns?.price_basis)}: interest $${Math.round(w.interest)} + strata $${Math.round(w.strata ?? 0)} + rates/insurance $${Math.round(w.rates_insurance)} − rent $${Math.round(w.rent)}. ${w.assumptions}.` : 'Needs a price and a rent estimate.', 'Weekly cost');
+  if (rl) {
+    tip(ry, `${rl.asking_weekly != null ? 'The rent this listing asks' : 'This listing does not show a weekly rent'}${rl.listing_price_text ? ` ("${rl.listing_price_text}")` : ''}.${rl.comparables_weekly != null ? ` Similar rentals within 1 km: median $${rl.comparables_weekly}/wk.` : ''}`, 'Asking rent');
+    tip(rw, rl.model_weekly != null ? `Our rent model's estimate for this apartment (${b.rent_model?.period}): $${rl.model_weekly}/wk. Typically within ~$${b.rent_model?.typical_error}/wk.` : 'No estimate: our rent model only covers individual City of Sydney apartments (not houses, share rooms or new builds).', 'Rent model');
+  } else {
+    tip(ry, `Weekly rent × 52 ÷ asking price${rentUsed ? ` = $${rentUsed} (${rentFrom}) × 52 ÷ ${K(price.asking ?? b.returns?.price_basis)}` : ''}${b.returns?.gross_yield_pct_at_likely != null ? `; ${b.returns.gross_yield_pct_at_likely}% at the likely sale` : ''}. Your minimum is ${investor.minYield}%. Before costs.`, 'Gross yield');
+    tip(rw, w.net_before_tax != null ? `Per week before tax at ${K(b.returns?.price_basis)}: interest $${Math.round(w.interest)} + strata $${Math.round(w.strata ?? 0)} + rates/insurance $${Math.round(w.rates_insurance)} − rent $${Math.round(w.rent)} (${rentFrom}). ${w.assumptions}.` : 'Needs a price and a rent estimate.', 'Weekly cost');
+  }
   tip(rv, 'Share of the suburb\'s rental units sitting vacant (latest month). Under 2% is a tight market — easier to keep a tenant.', 'Unit vacancy');
   root.append(readouts);
+  if (b.rent_model?.covered === false) root.append(h('div', 'ov-meta ov-model-note', 'Rent model: no estimate — only individual City of Sydney apartments (not houses, share rooms or new builds)'));
 
   // signals
   const sig = signals(b, investor);
@@ -260,7 +288,7 @@ export function renderOverview(b, investor = {}, { onAsk = () => {} } = {}) {
       r.addEventListener?.('click', () => onAsk(s.ask));
       if (s.tip) {
         r.removeAttribute('title'); // the tooltip replaces the native one
-        const TITLES = { SUPPLY: 'New supply nearby', TIMING: 'When the supply lands', QUOTE: 'How this agency quotes', VALUE: 'Value vs asking', RENT: 'Rent', RISK: 'Hazard nearby' };
+        const TITLES = { SUPPLY: 'New supply nearby', TIMING: 'When the supply lands', QUOTE: 'How this agency quotes', VALUE: 'Value vs asking', RENT: 'Rent', MODEL: 'Fine Print rent model', RISK: 'Hazard nearby' };
         tip(r, `${s.tip} Tap to ask: "${s.ask}"`, TITLES[s.tag] ?? s.tag);
       }
       list.append(r);

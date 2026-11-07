@@ -290,6 +290,7 @@ body.embedded { background: var(--paper); }
 .ov-readout-label { font-size: 12px; line-height: 16px; color: var(--muted); }
 .ov-readout-value { display: flex; align-items: center; gap: 7px; }
 .ov-readout .ov-meta { font-size: 10px; line-height: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ov-model-note { padding: 6px 22px; border-bottom: 1px solid var(--line); }
 .ov-num { font: 400 30px/32px var(--serif); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .ov-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
 .ov-dot-blue { background: var(--blue); } .ov-dot-warn { background: var(--warn); }

@@ -13,6 +13,17 @@ npm run watch                 # both builds in watch mode; reload the tab to pic
 Load in Chrome: `chrome://extensions` → Developer mode → Load unpacked → **`dist/`**.
 (Rebuild after pulling; reload the extension there if the manifest changed.)
 
+### Bundled day-only data (git-ignored `public/data/`, run before `npm run build`)
+
+```bash
+npm run prepare:public-housing -- <public-housing-homes-city-of-sydney.csv>
+npm run prepare:rent-model -- <Microburb-Data-Science-Task4>/submissions/rents_FinePrintPredictions.csv <…>/models/chosen.json
+```
+
+The rent model lookup (`{gnaf_id: [with_car, without_car]}`, ~2 MB) feeds `rent_model` in the
+brief; when it covers the flat, its rent drives yield and weekly cost. Without it the build
+still works and falls back to the nearby-rentals median.
+
 ## `src/runtime/` — hivemind-runtime, ported to JS
 
 Port of `hivemind-runtime` v0.3.2 (Python). Same contract and invariants: the

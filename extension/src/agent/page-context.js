@@ -67,6 +67,8 @@ function readListingPage() {
     url: location.href,
     listing,
     title: document.title,
+    // a listing FOR RENT: the portal says so in the title ("… - Studio for Rent - realestate.com.au") or URL
+    for_rent: /\bfor (?:rent|lease)\b/i.test(document.title) || /^\/rent\//.test(location.pathname),
     heading: document.querySelector('h1')?.innerText?.trim() ?? null,
     og: { title: meta('og:title'), description: meta('og:description') },
     // main listing image URL (reference link only — the image itself is never copied)

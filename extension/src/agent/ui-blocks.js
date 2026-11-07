@@ -425,7 +425,7 @@ function weeklyCostAt(price, brief, investor, rate = 0.06) {
   const deposit = investor?.deposit ?? 0;
   const strata = brief.weekly_cost?.strata ?? 0;
   const rates = brief.weekly_cost?.rates_insurance ?? 45;
-  return (Math.max(0, price - deposit) * rate) / 52 + strata + rates - (brief.rent?.weekly ?? 0);
+  return (Math.max(0, price - deposit) * rate) / 52 + strata + rates - (brief.returns?.rent_weekly_used ?? brief.rent?.weekly ?? 0);
 }
 
 /** Offer ladder from the data (the agent may override open/aim/walk_away). */
@@ -461,8 +461,10 @@ const BUILDERS = {
       ...(diff != null && { badge: { text: `${diff >= 0 ? '+' : '−'}${Math.abs(diff)} pts vs your ${inv.minYield}%`, tone: diff >= 0 ? 'good' : 'warn' } }),
       rows,
       threshold_pct: inv?.minYield ?? 4,
-      caption: `Rent from ${b.rent.comparables} similar ${b.property?.beds ? `${b.property.beds}-bedroom ` : ''}${b.rent.comparables === 1 ? 'rental' : 'rentals'} within 1 km: median $${b.rent.weekly}/wk (most between $${b.rent.low} and $${b.rent.high}).`,
-      sources: ['listings/for-rent', 'market/yield-pct'],
+      caption: b.returns?.rent_source === 'model' && b.rent_model?.covered
+        ? `Rent from our rent model: $${b.rent_model.weekly}/wk ${b.rent_model.scenario === 'with' ? 'with a car space' : 'without a car space'} (${b.rent_model.period}, typically within ~$${b.rent_model.typical_error}).${b.rent.weekly ? ` Similar rentals within 1 km: median $${b.rent.weekly}/wk.` : ''}`
+        : `Rent from ${b.rent.comparables} similar ${b.property?.beds ? `${b.property.beds}-bedroom ` : ''}${b.rent.comparables === 1 ? 'rental' : 'rentals'} within 1 km: median $${b.rent.weekly}/wk (most between $${b.rent.low} and $${b.rent.high}).`,
+      sources: b.returns?.rent_source === 'model' ? ['Fine Print rent model', 'listings/for-rent', 'market/yield-pct'] : ['listings/for-rent', 'market/yield-pct'],
     };
   },
   supply(b) {

@@ -15,6 +15,8 @@ import {
 import { addressFromPage, formatAddress } from './address.js';
 import { fetchListingBrief, inCoverage, listingBriefTool } from './listing-brief.js';
 import { loadPublicHousing } from './public-housing.js';
+import { loadRentModel } from './rent-model.js';
+import { parseWeeklyRent } from './rent-text.js';
 import { parsePriceText } from './price-text.js';
 import { LessonBook, uiBlockTool } from './ui-blocks.js';
 import { microburbsTools } from './microburbs-tools.js';
@@ -98,6 +100,8 @@ How to work:
 - Microburbs is the source of truth for every number. Never invent figures; if data is missing, say so.
 - Start with get_listing_brief for the listing's address: one call returns the matched property, prices, rent estimate, yield, weekly cost, supply pipeline, competition, market and hazards, all computed. Quote its numbers; don't recompute them.
 - Public housing comes from the City of Sydney list (public_housing in the brief: this home, homes in the same building, within 200 m and 500 m). State the counts plainly and neutrally; never characterise the people who live there.
+- Rent: the brief has two rent figures. rent = the median of similar rentals advertised within 1 km (Microburbs). rent_model = the Fine Print rent model's prediction for this flat (City of Sydney flats only; for Aug–Sep 2026; with and without a car space, the difference is the parking premium; typically within ~$45/wk). When rent_model covers the flat it drives yield and weekly cost (returns.rent_source = "model"). Call it "our rent model", give its period once, and never present it as Microburbs data. If rent_model.covered is false, the property is outside the model's coverage — use the comparables.
+- Rental listings: if the brief has rent_listing, the page is a property FOR RENT. Compare the asking rent with the model (rent_listing.vs_model_pct) and the comparables; skip purchase price, yield and weekly holding cost.
 - Use the individual tools only to dig deeper on a follow-up question. Suburb tools need the exact suburb name.
 
 Memory:
@@ -152,11 +156,17 @@ export async function loadBrief({ listing, onProgress = () => {} }) {
     const shown = parsePriceText(listing.page?.listing?.price_text);
     const bracket = listing.page?.hidden?.priceBracket;
     const pagePrice = shown ? { ...shown, source: 'listing price' } : bracket ? { low: bracket.min, high: bracket.max, mid: Math.round((bracket.min + bracket.max) / 2), text: `hidden bracket ${bracket.min}–${bracket.max}`, source: "portal's hidden price bracket" } : null;
+    // a rental listing: a weekly rent ("$750 per week"), or the portal says "for rent"
+    // even when the price is hidden ("Deposit Taken", "Contact Agent")
+    const priceText = listing.page?.listing?.price_text ?? null;
+    const pageRent = parseWeeklyRent(priceText) ?? (listing.page?.for_rent ? { weekly: null, text: priceText } : null);
     const brief = await fetchListingBrief({
       parts: address.parts,
-      pagePrice,
+      pagePrice: pageRent ? null : pagePrice,
+      pageRent,
       source: 'api',
       publicHousing: await loadPublicHousing(),
+      rentModel: await loadRentModel(),
       secretProvider: new ChromeStorageSecretProvider(),
       investor: settings.brief,
       onProgress,
@@ -195,6 +205,7 @@ Reply in Markdown, in exactly this shape (keep it tight — it renders in a 420 
 | Asking | <$> |
 | Likely sale | **<$>** — <the agency's quoting record in a few words> |
 | Rent | <$/wk (range), n comparables; this property's last advertised rent if there is one> |
+| Rent model | <our model's $/wk for its car-space scenario, the parking premium; or "not covered"> |
 | Gross yield | <at asking> · <at likely sale> |
 | Weekly cost | <$/wk before tax> |
 
@@ -203,6 +214,8 @@ Reply in Markdown, in exactly this shape (keep it tight — it renders in a 420 
 
 #### Upside
 - <one line>
+
+For a rental listing (the brief has rent_listing), use rows Asking rent / Rent model / Comparables / Last advertised instead, and judge the asking rent, not a purchase.
 
 If a figure is missing, write "n/a" and say why in a few words. No other headings, no code blocks.
 
@@ -246,7 +259,7 @@ async function turn({ threadId, inbound, listing, brief = null, instructions = n
   const cards = uiBlockTool({ getBrief: () => ctx.brief, investor: settings.brief, memory, lessons });
   const tools = new ToolRegistry(
     [
-      remembering(listingBriefTool({ source: 'api', secretProvider, investor: settings.brief, memory, listing, publicHousing: await loadPublicHousing() })),
+      remembering(listingBriefTool({ source: 'api', secretProvider, investor: settings.brief, memory, listing, publicHousing: await loadPublicHousing(), rentModel: await loadRentModel() })),
       ...propertyMemoryTools(memory),
       cards,
       ...microburbsTools({ source: 'api', secretProvider }),

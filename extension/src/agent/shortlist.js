@@ -39,6 +39,7 @@ export function shortlistRows(shortlist, records, investor = {}) {
       likely_sale: r?.likely_sale ?? null,
       price,
       rent_weekly: r?.rent_weekly ?? null,
+      model_rent_weekly: r?.model_rent_weekly ?? (r?.brief?.rent_model?.covered ? r.brief.rent_model.weekly : null),
       yield_pct: yieldPct,
       weekly_cost: r?.weekly_cost ?? null,
       new_homes_1km: r?.new_dwellings_1km ?? null,

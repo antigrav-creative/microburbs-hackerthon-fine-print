@@ -108,6 +108,7 @@ export function toRecord(brief, listing = {}, previous = null, now = new Date().
     likely_sale: brief.price?.likely_sale ?? null,
     estimated_value: brief.price?.value?.estimate ?? null,
     rent_weekly: brief.rent?.weekly ?? null,
+    model_rent_weekly: brief.rent_model?.covered ? brief.rent_model.weekly : null,
     yield_at_asking: brief.returns?.gross_yield_pct_at_asking ?? null,
     yield_at_likely: brief.returns?.gross_yield_pct_at_likely ?? null,
     weekly_cost: brief.weekly_cost?.net_before_tax ?? null,
@@ -189,7 +190,7 @@ export function propertyMemoryTools(memory) {
       name: 'recall_properties',
       label: "Looking through properties you've viewed",
       description:
-        "Search every property the investor has had analysed before (saved automatically whenever get_listing_brief runs). Returns compact rows: address, suburb, beds, link, image, asking, likely sale, estimated value, rent, yields, weekly cost, budget/yield fit, new dwellings within 1 km, risks, when analysed. Use it to compare this listing with earlier ones, answer 'which was the best one I looked at?', or find a property they mention by name or suburb.",
+        "Search every property the investor has had analysed before (saved automatically whenever get_listing_brief runs). Returns compact rows: address, suburb, beds, link, image, asking, likely sale, estimated value, rent, our rent model's rent, yields, weekly cost, budget/yield fit, new dwellings within 1 km, risks, when analysed. Use it to compare this listing with earlier ones, answer 'which was the best one I looked at?', or find a property they mention by name or suburb.",
       input_schema: {
         type: 'object',
         properties: {

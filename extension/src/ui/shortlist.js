@@ -41,6 +41,7 @@ const BUILT_IN = [
   { id: 'likely', label: 'Likely sale', type: 'money', get: (r) => r.likely_sale, best: 'min' },
   { id: 'value', label: 'Est. value', type: 'money', get: (r) => r.estimated_value },
   { id: 'rent', label: 'Rent /wk', type: 'money', get: (r) => r.rent_weekly, best: 'max' },
+  { id: 'model_rent', label: 'Model rent /wk', type: 'money', get: (r) => r.model_rent_weekly, best: 'max', hint: 'Fine Print rent model (City of Sydney apartments, Aug–Sep 2026), matching the car space' },
   { id: 'yield', label: 'Gross yield', type: 'pct', get: (r) => r.yield_pct, best: 'max' },
   { id: 'weekly_cost', label: 'Weekly cost', type: 'weekly', get: (r) => r.weekly_cost, best: 'min', hint: 'out of pocket per week, before tax' },
   { id: 'new_homes', label: 'New homes ≤1km', type: 'number', get: (r) => r.new_homes_1km, best: 'min' },

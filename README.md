@@ -104,8 +104,9 @@ The analyst runs on DeepSeek V4.1 Flash via OpenRouter. Settings has a **Reset e
 ```bash
 cd extension
 npm install
-npm test                                  # 85 unit tests
+npm test                                  # 93 unit tests
 npm run prepare:public-housing -- <path/to/public-housing-homes-city-of-sydney.csv>   # optional, see below
+npm run prepare:rent-model -- <path/to/rents_FinePrintPredictions.csv> <path/to/chosen.json>   # optional, see below
 npm run build                             # → extension/dist (load this folder in Chrome)
 ```
 
@@ -115,6 +116,7 @@ More detail on the agent runtime and code layout: [`extension/README.md`](extens
 
 - **Microburbs is the source of truth** for every figure: valuation, agency quoting record, rentals, sales, development applications, market and hazards. Calculations (yield, weekly cost, supply timing) are done in code, never by the model.
 - **Supplied hackathon files are not republished.** The public-housing CSV is turned into a small lookup at build time (`npm run prepare:public-housing`). It's git-ignored and ships only inside the built extension. Without it, everything works except the public housing flag.
+- **Our own rent model** (LightGBM + CatBoost, trained on City of Sydney leases to 31 Jul 2026; median error ~$44/wk, 79% within $100) is the one figure not from Microburbs, and it's labelled "our rent model" wherever it appears. Its predictions for 65,777 City of Sydney apartments (with and without a car space) are bundled the same way (`npm run prepare:rent-model`, git-ignored). When it covers the apartment, its rent drives yield and weekly cost; otherwise the nearby-rentals median does.
 - **Nothing leaves your browser** except calls to Microburbs and OpenRouter. Your brief, keys, shortlist and saved properties are stored locally.
 - Supply timing is an estimate (lodgement + approval + build time by size, ±1 year) and is labelled as one. General information, not financial advice.
 
