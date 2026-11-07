@@ -35,13 +35,13 @@ Then: slide 8, "Press F.", and into the demo. Slide 9 (take-up: no sign-up, both
 The demo shows the third way: the super-user's research, in seconds, on the listing. Numbers in [brackets] come off the panel on the day; skip any beat whose number doesn't come back.
 
 1. **Press F (0:00–0:10)** — on the REA listing. *"Gut-feel buyer sees this page. Press F."* Panel slides in, already scored against my brief.
-2. **The evidence the agent won't give you (0:10–0:35)** — *"Guide says [$850K]; this agency sells [1.4% under] its quotes, so likely [$838K] — [over] my budget. [4] rentals within a kilometre: [$775] a week, [4.7%] yield, [$181] a week out of my pocket."*
+2. **The evidence the agent won't give you (0:10–0:35)** — *"Guide says [$850K]; this agency sells [1.4% under] its quotes, so likely [$838K] — [over] my budget. Our rent model says this apartment rents for [$775] a week, [$20] more with a car space; that's [4.7%] yield and [$181] a week out of my pocket."*
 3. **The super-user research, done (0:35–0:55)** — risks and the new-homes card. *"[504] build-to-rent homes finish within a kilometre around [2031] — year [5] of my hold. That's the development-application digging, done for me."*
 4. **Talk to it (0:55–1:10)** — tap a suggested question, e.g. "What should I offer?" *"It's my intelligent investment analyst — it knows my brief, so the answer's about my numbers."* (Warm this listing first; if the answer is slow, cut to a pre-recorded take.)
 5. **Both portals (1:10–1:20)** — switch to the organisers' Waterloo listing on Domain. *"Same on Domain — your Waterloo example."*
 6. **The shortlist (1:20–1:35)** — click the toolbar icon. *"Everything I shortlist lands here: the super-user's spreadsheet, built for me. Sort by yield, add my own formula, copy to Excel."*
 
-## Business case (slide 8 · say it if there's room, always in Q&A)
+## Business case (slide 6 · the detail behind Jake's closing line, for Q&A)
 
 **In the 45 seconds** it's Jake's closing line (slide 6): free to read, paid for power users, 2.3 million Australians own a rental, and at scale live demand data for developers.
 
