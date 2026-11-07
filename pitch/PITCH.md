@@ -22,7 +22,7 @@ Problem → product → business. One idea per speaker; speak slower than feels 
 
 > Fine Print puts that research on the listing itself. Press F: the real price, what it'll rent for from our own model, your weekly cost, and when new supply lands.
 
-**Yong — the business (~13s)** · slides 6–7
+**Jake — the business (~13s)** · slides 6–7
 
 > It's your own intelligent investment analyst. Free to read, paid for power users, and 2.3 million Australians own a rental. At scale, it's live demand data for developers. Fine Print: read it before you buy it.
 
@@ -43,7 +43,7 @@ The demo shows the third way: the super-user's research, in seconds, on the list
 
 ## Business case (slide 8 · say it if there's room, always in Q&A)
 
-**In the 45 seconds** it's Yong's line (slide 6): free to read, paid for power users, 2.3 million Australians own a rental, and at scale live demand data for developers.
+**In the 45 seconds** it's Jake's closing line (slide 6): free to read, paid for power users, 2.3 million Australians own a rental, and at scale live demand data for developers.
 
 **1. Investor subscription: free to read, paid for power users.** Pricing is still to be worked out; the numbers below are illustrative at **$15 a month ($180 a year)**.
 
