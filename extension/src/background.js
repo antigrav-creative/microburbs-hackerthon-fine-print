@@ -7,16 +7,16 @@ chrome.runtime.onInstalled.addListener(() => {
   console.log(`[fine-print] installed · runtime ${VERSION}`);
 });
 
-// Toolbar icon toggles the on-page slide-out. On pages without the content script
-// (anything but REA/Domain), activeTab lets us inject it for this tab on click.
-chrome.action.onClicked.addListener(async (tab) => {
-  if (!tab.id) return;
-  try {
-    await chrome.tabs.sendMessage(tab.id, { type: 'fineprint:toggle' });
-  } catch {
-    // path must match manifest.content_scripts.js — the build puts it at content/inject.js
-    await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['content/inject.js'] });
-    await chrome.tabs.sendMessage(tab.id, { type: 'fineprint:toggle' }).catch(() => {});
+// Toolbar icon opens the shortlist spreadsheet (focuses it if it's already open).
+// On listings the panel opens with F or the corner button.
+const SHORTLIST_URL = chrome.runtime.getURL('src/ui/shortlist.html');
+chrome.action.onClicked.addListener(async () => {
+  const [open] = await chrome.tabs.query({ url: `${SHORTLIST_URL}*` }).catch(() => []);
+  if (open?.id) {
+    await chrome.tabs.update(open.id, { active: true });
+    if (open.windowId != null) await chrome.windows.update(open.windowId, { focused: true });
+  } else {
+    await chrome.tabs.create({ url: SHORTLIST_URL });
   }
 });
 

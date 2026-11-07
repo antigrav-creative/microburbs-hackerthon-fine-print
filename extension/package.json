@@ -3,11 +3,12 @@
   "private": true,
   "version": "0.0.1",
   "type": "module",
-  "description": "Fine Print Chrome extension — hivemind-runtime JS port + investor panel (React + Vite + Tailwind).",
+  "description": "Fine Print Chrome extension \u2014 hivemind-runtime JS port + investor panel (React + Vite + Tailwind).",
   "scripts": {
     "test": "node --test \"test/**/*.test.js\"",
     "build": "vite build && vite build --config vite.content.config.js",
-    "watch": "node scripts/watch.mjs"
+    "watch": "node scripts/watch.mjs",
+    "prepare:public-housing": "node scripts/prepare-public-housing.mjs"
   },
   "engines": {
     "node": ">=20"

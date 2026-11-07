@@ -13,6 +13,7 @@
 
 import { tool, ToolError } from '../runtime/index.js';
 import { validate } from '../runtime/validate.js';
+import { agencySentence } from './agency-text.js';
 
 // ---------------------------------------------------------------- schema helpers
 const str = (maxLength = 120) => ({ type: 'string', minLength: 1, maxLength });
@@ -55,7 +56,7 @@ export const TEMPLATES = {
         { label: 'Your minimum', value_pct: 4, kind: 'minimum' },
       ],
       threshold_pct: 4,
-      caption: '4 one-bed rentals ≤ 1 km, median $775/wk ($740–815).',
+      caption: 'Rent from 4 similar 1-bedroom rentals within 1 km: median $775/wk (most between $740 and $815).',
       sources: ['listings/for-rent', 'market/yield-pct'],
     },
   },
@@ -155,7 +156,7 @@ export const TEMPLATES = {
         caption: COMMON.caption,
         sources: COMMON.sources,
       },
-      ['headline', 'estimate', 'low', 'high', 'confidence', 'caption', 'sources'],
+      ['headline', 'estimate', 'low', 'high', 'caption', 'sources'], // confidence: only Microburbs' AVM has one
     ),
     example: {
       headline: '$713K',
@@ -460,7 +461,7 @@ const BUILDERS = {
       ...(diff != null && { badge: { text: `${diff >= 0 ? '+' : '−'}${Math.abs(diff)} pts vs your ${inv.minYield}%`, tone: diff >= 0 ? 'good' : 'warn' } }),
       rows,
       threshold_pct: inv?.minYield ?? 4,
-      caption: `${b.rent.comparables} ${b.property?.beds ?? ''}-bed rentals ≤ 1 km, median $${b.rent.weekly}/wk ($${b.rent.low}–${b.rent.high}).`.replace(' -bed', ''),
+      caption: `Rent from ${b.rent.comparables} similar ${b.property?.beds ? `${b.property.beds}-bedroom ` : ''}${b.rent.comparables === 1 ? 'rental' : 'rentals'} within 1 km: median $${b.rent.weekly}/wk (most between $${b.rent.low} and $${b.rent.high}).`,
       sources: ['listings/for-rent', 'market/yield-pct'],
     };
   },
@@ -471,7 +472,7 @@ const BUILDERS = {
       headline: String(s.new_dwellings_stated),
       badge: s.build_to_rent_dwellings > 0 ? { text: 'build-to-rent nearby', tone: 'warn' } : { text: `${s.applications} applications`, tone: 'neutral' },
       projects: s.largest.slice(0, 5).map((p) => ({ dwellings: p.dwellings, km: p.km, build_to_rent: p.build_to_rent, label: firstPart(p.address).slice(0, 48) })),
-      caption: `${s.applications} applications within ${s.radius_km ?? 1} km state ${s.new_dwellings_stated} new homes${s.build_to_rent_dwellings ? `, ${s.build_to_rent_dwellings} of them build-to-rent (they compete for tenants)` : ''}. DA stage is unknown.`,
+      caption: `${s.applications} ${s.applications === 1 ? 'application' : 'applications'} within ${s.radius_km ?? 1} km state ${s.new_dwellings_stated} new homes${s.build_to_rent_dwellings ? `, ${s.build_to_rent_dwellings} of them build-to-rent (they compete for tenants)` : ''}. DA stage is unknown.`,
       sources: ['development/da-list'],
     };
   },
@@ -516,10 +517,12 @@ const BUILDERS = {
       estimate: v.estimate,
       low: v.low,
       high: v.high,
-      confidence: v.confidence,
+      ...(Number.isFinite(v.confidence) && { confidence: v.confidence }),
       ...(b.price.asking && { asking: b.price.asking }),
       ...(b.price.likely_sale && { likely: b.price.likely_sale }),
-      caption: 'A computer valuation from recent nearby sales — a second opinion on price, not a bank valuation.',
+      caption: Number.isFinite(v.confidence)
+        ? 'A computer valuation from recent nearby sales — a second opinion on price, not a bank valuation.'
+        : `From the ${v.basis ?? 'recent sales nearby'} — Microburbs has no automated valuation for this one. A second opinion, not a bank valuation.`,
       sources: ['valuation/avm'],
     };
   },
@@ -550,7 +553,7 @@ const BUILDERS = {
       ...(b.price?.value?.estimate && { estimate: b.price.value.estimate }),
       ...(b.price?.asking && { asking: b.price.asking }),
       ...(b.price?.likely_sale && { likely: b.price.likely_sale }),
-      caption: a ? `Agency: ${a.name}, "${String(a.cohort).toLowerCase()}" — ${a.underquote_rate_pct}% of ${a.sales} sales went over quote, by a median ${a.median_over_quote_pct}%.` : 'Aim between the estimate and the asking price; walk away at your budget or the likely sale.',
+      caption: a ? `Agency: ${a.name} (${String(a.cohort).toLowerCase()}). ${agencySentence(a)}` : 'Aim between the estimate and the asking price; walk away at your budget or the likely sale.',
       sources: ['valuation/agent-quoting', 'valuation/avm'],
     };
   },
@@ -604,9 +607,14 @@ const BUILDERS = {
   overlays(b) {
     const risks = b.risks ?? [];
     const pretty = { hv_power_line: 'High-voltage power line', flood: 'Flood', heritage: 'Heritage', bushfire: 'Bushfire', public_housing: 'Public housing' };
-    const items = risks.length
-      ? risks.slice(0, 8).map((r) => ({ name: (pretty[r.name] ?? titleCase(r.name.replace(/_/g, ' '))).slice(0, 36), detail: String(r.detail ?? '').replace(/^Not on property;\s*/i, '').slice(0, 36), status: r.on_property ? 'on_property' : 'nearby' }))
-      : [{ name: 'No hazards flagged', detail: 'on or near the title', status: 'clear' }];
+    const items = risks.slice(0, 8).map((r) => ({ name: (pretty[r.name] ?? titleCase(r.name.replace(/_/g, ' '))).slice(0, 36), detail: String(r.detail ?? '').replace(/^Not on property;\s*/i, '').slice(0, 36), status: r.on_property ? 'on_property' : 'nearby' }));
+    const ph = b.public_housing;
+    if (ph && !risks.some((r) => r.name === 'public_housing')) {
+      items.push(ph.within_200m
+        ? { name: 'Public housing nearby', detail: `${ph.within_200m} homes within 200 m`.slice(0, 36), status: 'nearby' }
+        : { name: 'Public housing', detail: `none within 200 m`, status: 'clear' });
+    }
+    if (!items.length) items.push({ name: 'No hazards flagged', detail: 'on or near the title', status: 'clear' });
     return {
       headline: risks.length ? `${risks.length} thing${risks.length > 1 ? 's' : ''} to check` : 'Clear.',
       items,
@@ -617,9 +625,16 @@ const BUILDERS = {
 
 /** template + brief → a card body (throws Unavailable when the data isn't there). */
 export function cardFromBrief(template, brief, investor = {}, extra = {}) {
-  const body = BUILDERS[template](brief, investor, extra);
+  const body = dropNulls(BUILDERS[template](brief, investor, extra));
   if (extra.caption) body.caption = extra.caption;
   return body;
+}
+
+/** Missing data is left OUT of a card (optional fields), never sent as null — schemas type fields as numbers. */
+function dropNulls(x) {
+  if (Array.isArray(x)) return x.map(dropNulls);
+  if (x && typeof x === 'object') return Object.fromEntries(Object.entries(x).filter(([, v]) => v != null).map(([k, v]) => [k, dropNulls(v)]));
+  return x;
 }
 
 // ---------------------------------------------------------------- the tool

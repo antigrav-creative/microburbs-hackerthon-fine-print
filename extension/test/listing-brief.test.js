@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { computeBrief, dwellingsFromDescription, haversineKm, quantile, suburbsNear } from '../src/agent/listing-brief.js';
 
-import { TEST_INVESTOR as INVESTOR, TEST_RAW as RAW } from '../src/agent/test-data.js';
+import { TEST_INVESTOR as INVESTOR, TEST_RAW as RAW } from './fixtures/test-data.js';
 
 test('rent comps: same beds, within 1 km, deduped; median + quartiles', () => {
   const b = computeBrief(RAW, { investor: INVESTOR });
@@ -67,7 +67,7 @@ test('helpers', () => {
 });
 
 test('bundled test data: brief for the address on screen, clearly marked', async () => {
-  const { testBrief } = await import('../src/agent/test-data.js');
+  const { testBrief } = await import('./fixtures/test-data.js');
   const b = testBrief({ unit: '1711', number: '301', street: 'Botany Road', suburb: 'Zetland', state: 'NSW', postcode: '2017' });
   assert.equal(b.property.address, '1711/301 Botany Road, Zetland');
   assert.equal(b.property.gnaf_id, 'TEST-1711-301-BOTANY-ROAD-ZETLAND');

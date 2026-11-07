@@ -44,7 +44,7 @@ export function estimateCompletion(da, now = new Date()) {
  */
 export function supplyTimeline(pipeline, { holdYears = 10, now = new Date() } = {}) {
   const startYear = now.getFullYear();
-  const lastYear = startYear + Math.max(1, holdYears);
+  const lastYear = startYear + Math.max(1, holdYears) - 1; // hold years 1..N (year 1 = this year)
   const byYear = new Map();
   let likelyBuilt = 0;
   let likelyBuiltBtr = 0;

@@ -48,6 +48,17 @@ export function shortlistRows(shortlist, records, investor = {}) {
       meets_yield: yieldPct != null && investor.minYield != null ? yieldPct >= investor.minYield : null,
       analysed: Boolean(r),
       analysed_at: r?.last_analysed_at ?? null,
+      // extra columns for the spreadsheet view
+      baths: r?.baths ?? null,
+      parking: r?.parking ?? null,
+      estimated_value: r?.estimated_value ?? null,
+      vacancy_pct: r?.brief?.market?.unit_vacancy_pct ?? null,
+      supply_peak_year: r?.brief?.supply?.timeline?.peak?.year ?? null,
+      supply_peak_hold_year: r?.brief?.supply?.timeline?.peak?.hold_year ?? null,
+      agency: r?.brief?.price?.agency?.name ?? null,
+      agency_cohort: r?.brief?.price?.agency?.cohort ?? null,
+      last_sold_price: r?.brief?.price?.last_sold?.price ?? null,
+      last_sold_date: r?.brief?.price?.last_sold?.date ?? null,
     };
   });
 }

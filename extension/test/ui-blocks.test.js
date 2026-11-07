@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { cardFromBrief, LessonBook, offerLadder, resolveTemplate, TEMPLATES, uiBlockTool } from '../src/agent/ui-blocks.js';
-import { testBrief, TEST_INVESTOR } from '../src/agent/test-data.js';
+import { testBrief, TEST_INVESTOR } from './fixtures/test-data.js';
 import { ToolRegistry } from '../src/runtime/index.js';
 import { validate } from '../src/runtime/validate.js';
 
@@ -83,4 +83,18 @@ test('cards for a saved property come from memory', async () => {
   assert.equal(res.body.headline, '105/8 Sam Sing Street');
   const miss = JSON.parse((await registry({ memory }).execute(call({ template: 'property', property: 'nowhere' }))).result);
   assert.equal(miss.error_code, 'not_found');
+});
+
+test('value card builds when the valuation has no confidence score (sales-median fallback)', () => {
+  const sparse = structuredClone(BRIEF);
+  sparse.price.value = { estimate: 978000, low: 893000, high: 1083000, confidence: null, as_of: null, basis: 'median of 30 recent same-bed sales nearby' };
+  const body = cardFromBrief('value', sparse, INVESTOR);
+  assert.deepEqual(validate(TEMPLATES.value.schema, body), []);
+  assert.equal('confidence' in body, false);
+  assert.match(body.caption, /median of 30 recent same-bed sales/);
+});
+
+test('cards never carry nulls — missing optional data is left out, not sent as null', () => {
+  const hasNull = (x) => x === null || (typeof x === 'object' && x !== null && Object.values(x).some(hasNull));
+  for (const name of Object.keys(TEMPLATES)) assert.equal(hasNull(cardFromBrief(name, BRIEF, INVESTOR)), false, name);
 });

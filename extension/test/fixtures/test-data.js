@@ -1,12 +1,11 @@
-// Bundled TEST DATA — lets the panel and widgets run with no Microburbs access
-// (Settings → Microburbs source → "Test data"). Same fixture the unit tests use:
+// Unit-test fixture (not shipped in the extension):
 // real Microburbs response shapes and values for Unit 38, 3 Victoria Park Pde,
 // Zetland (7 Nov), with a small synthetic set of nearby rentals + DAs.
 // The brief is re-labelled with the address on screen and clearly marked as test data.
 
-import { tool } from '../runtime/index.js';
-import { formatAddress, parseAddress } from './address.js';
-import { computeBrief } from './listing-brief.js';
+import { tool } from '../../src/runtime/index.js';
+import { formatAddress, parseAddress } from '../../src/agent/address.js';
+import { computeBrief } from '../../src/agent/listing-brief.js';
 
 // Shapes + values from the live demo proxy for Unit 38, 3 Victoria Park Pde, Zetland (7 Nov).
 export const TEST_HERE = { lat: -33.90521711, lng: 151.21082342 };

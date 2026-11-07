@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fine Print — slide-out preview</title>
+    <!-- The real content/inject.js (slide-out shell, page squish, Shortlist) on a fake listing page,
+         with a tiny chrome.* shim. The panel iframe is dev/preview.html?embed=… (static, no model).
+         ?panel=overview|chat|setup|loading -->
+    <style>
+      body { margin: 0; font: 15px/1.5 -apple-system, system-ui, sans-serif; background: #f1eee7; color: #6f6b63; }
+      .page { max-width: 900px; padding: 28px 48px; }
+      .gallery { display: grid; grid-template-columns: 2fr 1fr; gap: 8px; height: 360px; }
+      .gallery div { background: #dcd9d2; border-radius: 12px; }
+      .gallery div:first-child { grid-row: span 2; }
+      h1 { font-size: 30px; color: #6f6b63; margin: 24px 0 4px; }
+      .bar { position: fixed; top: 0; right: 0; left: 0; height: 0; }
+      .controls { margin-top: 24px; display: flex; gap: 8px; }
+      .controls button { padding: 8px 12px; border-radius: 8px; border: 1px solid #d6d0c3; background: #fff; cursor: pointer; }
+    </style>
+    <script>
+      // chrome.* shim: just enough for content/inject.js
+      const store = {};
+      const panel = new URLSearchParams(location.search).get('panel') ?? 'overview';
+      const listeners = [];
+      window.chrome = {
+        runtime: {
+          getURL: () => new URL(`preview.html?embed=${panel}`, location.href).href,
+          onMessage: { addListener: (fn) => listeners.push(fn) },
+        },
+        storage: { local: { get: async (k) => ({ [k]: store[k] }), set: async (o) => Object.assign(store, o) } },
+      };
+      window.toggleFinePrint = () => listeners.forEach((fn) => fn({ type: 'fineprint:toggle' }, null, () => {}));
+    </script>
+  </head>
+  <body>
+    <div class="page">
+      <div class="gallery"><div></div><div></div><div></div></div>
+      <h1>$775,000</h1>
+      <div>38/3 Victoria Park Parade, Zetland NSW 2017</div>
+      <div>1 bed · 1 bath · 80 m² · Apartment</div>
+      <p>Moments from Green Square station and Gunyama Park. A rare opportunity for first-home buyers and savvy investors alike.</p>
+      <div class="controls">
+        <button onclick="toggleFinePrint()">Toggle panel (toolbar icon)</button>
+        <button onclick="location.search='?panel=overview'">overview</button>
+        <button onclick="location.search='?panel=chat'">chat</button>
+        <button onclick="location.search='?panel=setup'">setup</button>
+        <button onclick="location.search='?panel=loading'">loading</button>
+      </div>
+    </div>
+    <script src="../src/content/inject.js"></script>
+    <script>setTimeout(() => window.__finePrint?.open(), 300);</script>
+  </body>
+</html>

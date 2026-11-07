@@ -1,14 +1,10 @@
-// Microburbs endpoints as declarative tools. Two sources:
-//   api   — https://api-ht.microburbs.com.au/v1 with the team key (Bearer)
-//   proxy — the organisers' demo site proxy; authenticates by YOUR Chrome session
-//           (Vercel checkpoint cookie), so it only works in a browser that has
-//           visited microburbs-api-demos.vercel.app. Dev only.
+// Microburbs endpoints as declarative tools, against the live API with the team key (Bearer):
+//   api — https://api-ht.microburbs.com.au/v1
 
 import { declarativeTool } from '../runtime/index.js';
 
 export const SOURCES = {
   api: { base: 'https://api-ht.microburbs.com.au/v1', host: 'api-ht.microburbs.com.au', auth: true },
-  proxy: { base: 'https://microburbs-api-demos.vercel.app/api/mb/v1', host: 'microburbs-api-demos.vercel.app', auth: false },
 };
 
 const str = (description) => ({ type: 'string', description });
@@ -64,7 +60,7 @@ export const LABELS = {
 };
 
 /** @returns {import('../runtime/registry.js').Tool[]} */
-export function microburbsTools({ source = 'proxy', secretProvider }) {
+export function microburbsTools({ source = 'api', secretProvider }) {
   const s = SOURCES[source];
   return DEFS.map(([name, description, input_schema, path, query, response]) =>
     declarativeTool(

@@ -20,3 +20,12 @@ test('parseQuestions: lines, numbering, bullets, quotes, JSON', async () => {
   assert.deepEqual(parseQuestions('{"questions":["What should I offer?","Any hazards nearby?","Is rent growth safe?"]}'), ['What should I offer?', 'Any hazards nearby?', 'Is rent growth safe?']);
   assert.deepEqual(parseQuestions(''), []);
 });
+
+test('briefIsSet: onboarding until every field has a real value', async () => {
+  const { briefIsSet } = await import('../src/agent/agent.js');
+  assert.equal(briefIsSet({ budget: 800000, deposit: 160000, minYield: 4, holdYears: 10 }), true);
+  assert.equal(briefIsSet(null), false);
+  assert.equal(briefIsSet({}), false);
+  assert.equal(briefIsSet({ budget: 800000, deposit: 160000, minYield: 4, holdYears: 0 }), false); // the old "0" bug
+  assert.equal(briefIsSet({ budget: '', deposit: 160000, minYield: 4, holdYears: 10 }), false);
+});

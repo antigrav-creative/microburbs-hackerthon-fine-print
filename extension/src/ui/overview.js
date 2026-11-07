@@ -70,7 +70,7 @@ function signals(b, investor) {
       tag: 'RISK',
       icon: 'alert',
       tone: 'risk',
-      text: ({ hv_power_line: 'High-voltage power line', flood: 'Flood zone', heritage: 'Heritage overlay', bushfire: 'Bushfire zone' })[r.name] ?? titleCase(r.name.replace(/_/g, ' ')),
+      text: ({ hv_power_line: 'High-voltage power line', flood: 'Flood zone', heritage: 'Heritage overlay', bushfire: 'Bushfire zone', public_housing: 'Public housing' })[r.name] ?? titleCase(r.name.replace(/_/g, ' ')),
       value: String(r.detail ?? '').replace(/^Not on property;\s*/i, '').replace(/^nearest\s+/i, '').replace(/\s*away$/, ''),
       ask: 'Any hazards I should check?',
     });

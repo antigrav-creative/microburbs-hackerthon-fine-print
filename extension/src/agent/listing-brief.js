@@ -8,6 +8,7 @@
 //
 // Microburbs is the source of truth for every number here. Cached per GNAF.
 
+import { publicHousingAround } from './public-housing.js';
 import { tool, ToolError } from '../runtime/index.js';
 import { AllowlistHttpClient } from '../runtime/tools/http.js';
 import { SOURCES } from './microburbs-tools.js';
@@ -107,7 +108,7 @@ const isBuildToRent = (desc) => /build[- ]to[- ]rent|\bbtr\b/i.test(String(desc 
  * @param {Object} raw  { match, avm, quoting, history, risks, basics, sales, nearby, market, strata, vacancy, rentals[], das[] }
  * @param {Object} o    { investor: {budget, deposit, minYield}, rate, ratesInsuranceWeekly, radiusKm }
  */
-export function computeBrief(raw, { investor = {}, rate = 0.06, ratesInsuranceWeekly = 45, radiusKm = 1 } = {}) {
+export function computeBrief(raw, { investor = {}, rate = 0.06, ratesInsuranceWeekly = 45, radiusKm = 1, publicHousing = null } = {}) {
   const here = raw.nearby?.center_lat != null ? { lat: raw.nearby.center_lat, lng: raw.nearby.center_lng } : null;
   const beds = raw.basics?.bed_count ?? null;
   const within = (lat, lng) => (here && lat != null && lng != null ? haversineKm(here, { lat, lng }) : null);
@@ -185,6 +186,9 @@ export function computeBrief(raw, { investor = {}, rate = 0.06, ratesInsuranceWe
 
   // --- risks: on-property or very close only
   const risks = [];
+  const ph = publicHousingAround(here, raw.match?.id ?? null, publicHousing);
+  if (ph?.this_home) risks.push({ name: 'public_housing', detail: 'This home is on the public housing list', on_property: true });
+  else if (ph?.in_building) risks.push({ name: 'public_housing', detail: `${ph.in_building} public housing ${ph.in_building === 1 ? 'home' : 'homes'} in this building`, on_property: false });
   for (const [name, rows] of Object.entries(raw.risks ?? {})) {
     for (const r of rows ?? []) {
       if (r.on_property) risks.push({ name, detail: r.value, on_property: true });
@@ -261,6 +265,7 @@ export function computeBrief(raw, { investor = {}, rate = 0.06, ratesInsuranceWe
         }
       : null,
     risks,
+    public_housing: ph,
   };
 }
 
@@ -322,7 +327,7 @@ const projectDas = (d) => (d ?? []).map((x) => ({ area_name: x.area_name, descri
  * Fetch + compute a brief for an address. Throws a ToolError-shaped err on no match.
  * @param {Object} o  { address | parts, source, secretProvider, investor, fetch?, onProgress? }
  */
-export async function fetchListingBrief({ address = null, parts = null, pagePrice = null, source = 'proxy', secretProvider, investor, fetch: fetchImpl, onProgress = () => {} }) {
+export async function fetchListingBrief({ address = null, parts = null, pagePrice = null, source = 'api', secretProvider, investor, fetch: fetchImpl, onProgress = () => {}, publicHousing = null }) {
   const s = SOURCES[source];
   const http = new AllowlistHttpClient([s.host], { timeoutS: 20, fetch: fetchImpl, credentials: s.auth ? 'omit' : 'include' });
   const headers = s.auth ? { Authorization: `Bearer ${await secretProvider.get('microburbs')}` } : {};
@@ -375,7 +380,7 @@ export async function fetchListingBrief({ address = null, parts = null, pagePric
 
   // the brief's maths depends on the investor (deposit, budget, min yield) — key the cache on it
   // the maths depends on the investor and on the listing's own price — key the cache on both
-  const cacheKey = `brief:v2:${match.id}:${investor?.budget ?? ''}:${investor?.deposit ?? ''}:${investor?.minYield ?? ''}:${pagePrice?.mid ?? ''}`;
+  const cacheKey = `brief:v3:${publicHousing ? 'ph' : ''}:${match.id}:${investor?.budget ?? ''}:${investor?.deposit ?? ''}:${investor?.minYield ?? ''}:${pagePrice?.mid ?? ''}`;
   const cached = await cacheGet(cacheKey);
   if (cached) return { ...cached, meta: { ...cached.meta, cached: true } };
 
@@ -396,7 +401,7 @@ export async function fetchListingBrief({ address = null, parts = null, pagePric
     Promise.all(subs.map((sub) => bySuburb(sub, 'development/da-list', null, projectDas))),
   ]);
 
-  const brief = computeBrief({ match, avm, quoting, history, risks, basics, sales, nearby, market, strata, vacancy, rentals, das, page_price: pagePrice }, { investor });
+  const brief = computeBrief({ match, avm, quoting, history, risks, basics, sales, nearby, market, strata, vacancy, rentals, das, page_price: pagePrice }, { investor, publicHousing });
   brief.meta = { suburbs_searched: subs, fetched_ms: Date.now() - t0, fetched_at: new Date().toISOString(), source: 'Microburbs API', ...(failed.length ? { partial: failed } : {}) };
   // a partial brief (e.g. rate-limited) is shown but never cached — the next open retries
   if (!failed.length) await cacheSet(cacheKey, brief);
@@ -404,7 +409,7 @@ export async function fetchListingBrief({ address = null, parts = null, pagePric
 }
 
 /** The tool the agent calls. */
-export function listingBriefTool({ source, secretProvider, investor, onProgress, memory = null, listing = null }) {
+export function listingBriefTool({ source, secretProvider, investor, onProgress, memory = null, listing = null, publicHousing = null }) {
   return tool({
     name: 'get_listing_brief',
     label: 'Pulling the Microburbs brief for this property',
@@ -416,7 +421,7 @@ export function listingBriefTool({ source, secretProvider, investor, onProgress,
       required: ['address'],
     },
     execute: async ({ address }) => {
-      const brief = await fetchListingBrief({ address, source, secretProvider, investor, onProgress });
+      const brief = await fetchListingBrief({ address, source, secretProvider, investor, onProgress, publicHousing });
       // Remember every analysed property (with where we saw it) for later recall.
       const seenOn = listing ? { url: listing.url ?? null, image: listing.page?.image ?? null, title: listing.page?.heading ?? listing.title ?? null } : {};
       await memory?.save(brief, seenOn).catch((e) => console.warn('[fine-print] could not save property', e));

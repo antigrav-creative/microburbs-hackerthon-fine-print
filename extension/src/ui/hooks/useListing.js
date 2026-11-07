@@ -21,12 +21,15 @@ async function currentTab() {
  * retries briefly while the new heading renders; the newest navigation wins.
  */
 export function useListing() {
-  const [state, setState] = useState({ ready: false, listing: null, threadId: null });
+  // pending: the host page navigated and the new listing isn't read yet — show a loading
+  // state instead of the previous listing's details
+  const [state, setState] = useState({ ready: false, listing: null, threadId: null, pending: true });
   const listingRef = useRef(null);
   const runRef = useRef(0);
 
   const detect = useCallback(async ({ settleMs = 0 } = {}) => {
     const my = ++runRef.current;
+    setState((s) => (s.pending ? s : { ...s, pending: true }));
     if (settleMs) await sleep(settleMs);
     if (my !== runRef.current) return;
     const tab = await currentTab();
@@ -45,7 +48,7 @@ export function useListing() {
     await chrome.storage.local.set({ threads });
     if (my !== runRef.current) return;
     listingRef.current = listing;
-    setState({ ready: true, listing, threadId });
+    setState({ ready: true, listing, threadId, pending: false });
   }, []);
 
   useEffect(() => {

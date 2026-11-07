@@ -22,7 +22,7 @@ test('supply lands per year of the hold; peak is the build-to-rent wave', () => 
   const t = supplyTimeline(PIPE, { holdYears: 10, now: NOW });
   assert.equal(t.years[0].year, 2026);
   assert.equal(t.years[0].hold_year, 1);
-  assert.equal(t.years.length, 11);
+  assert.equal(t.years.length, 10); // hold years 1..10
   assert.deepEqual(t.peak, { year: 2031, hold_year: 6, dwellings: 252, build_to_rent: 252 });
   assert.equal(t.likely_built, 376); // already in today's market, not future supply
   assert.equal(t.future_total, 504 + 111 + 48);
@@ -32,7 +32,7 @@ test('supply lands per year of the hold; peak is the build-to-rent wave', () => 
 
 test('a short hold pushes the wave beyond it', () => {
   const t = supplyTimeline(PIPE, { holdYears: 3, now: NOW });
-  assert.equal(t.years.at(-1).year, 2029);
+  assert.equal(t.years.at(-1).year, 2028); // a 3-year hold covers 2026–2028
   assert.ok(t.beyond_hold >= 504 * 0.75); // the BTR wave mostly lands after a 3-year hold
 });
 

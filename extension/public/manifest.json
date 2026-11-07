@@ -7,13 +7,12 @@
   "permissions": ["storage", "scripting", "activeTab"],
   "host_permissions": [
     "https://api-ht.microburbs.com.au/*",
-    "https://microburbs-api-demos.vercel.app/*",
     "https://api.deepseek.com/*",
     "https://openrouter.ai/*",
     "https://www.realestate.com.au/*",
     "https://www.domain.com.au/*"
   ],
-  "action": { "default_title": "Fine Print" },
+  "action": { "default_title": "Fine Print — your shortlist" },
   "options_page": "options.html",
   "content_scripts": [
     {

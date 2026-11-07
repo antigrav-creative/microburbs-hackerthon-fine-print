@@ -29,7 +29,10 @@ export function openAppDb(indexedDB = globalThis.indexedDB) {
       }
     };
     req.onsuccess = () => {
-      req.result.onversionchange = () => req.result.close();
+      req.result.onversionchange = () => {
+        req.result.close(); // let a reset (delete) or upgrade elsewhere proceed
+        dbPromise = null; // next use reopens a fresh database
+      };
       resolve(req.result);
     };
     req.onerror = () => reject(req.error);

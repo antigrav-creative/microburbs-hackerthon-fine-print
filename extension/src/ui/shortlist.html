@@ -7,31 +7,69 @@
     <link rel="stylesheet" href="shortlist.css" />
   </head>
   <body>
-    <header class="sl-top">
-      <div class="sl-brand"><span class="mark">F</span> Fine Print <span class="dim">/ shortlist</span></div>
-      <div class="sl-controls">
+    <header class="sh-top">
+      <div class="sh-brand">
+        <span class="mark" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 9.5V2.5h8M2 6h5" fill="none" stroke="#FBFAF6" stroke-width="1.6" stroke-linecap="round" /></svg></span>
+        Fine Print <span class="dim">/ shortlist</span>
+      </div>
+      <div class="sh-tools">
+        <input id="search" class="sh-search" placeholder="Search all columns…  ( / )" />
         <span id="brief" class="chip"></span>
-        <label class="dim">Sort
-          <select id="sort">
-            <option value="fit">Best fit to your brief</option>
-            <option value="yield">Highest yield</option>
-            <option value="weekly_cost">Lowest weekly cost</option>
-            <option value="price">Lowest price</option>
-            <option value="supply">Least new supply nearby</option>
-            <option value="added">Recently added</option>
-          </select>
-        </label>
+        <button id="cols-btn" class="btn">Columns</button>
+        <button id="add-col" class="btn">+ Column</button>
+        <button id="copy" class="btn" title="Copy the visible table (paste into Excel / Sheets)">Copy</button>
+        <button id="csv" class="btn">Export CSV</button>
+        <button id="settings" class="btn" title="Investor brief, keys and settings">Settings</button>
       </div>
     </header>
-    <main class="sl-main">
-      <h1 class="sl-title">Your shortlist <span id="count" class="dim"></span></h1>
-      <p class="dim sl-sub">Figures are from Microburbs, as of when you last opened each listing. Blue marks the best in each column.</p>
-      <div id="rows" class="sl-grid"></div>
-      <section id="recent-wrap" hidden>
-        <h2 class="sl-h2">Recently analysed <span class="dim">— not on your shortlist</span></h2>
-        <div id="recent" class="sl-recent"></div>
-      </section>
+
+    <main class="sh-main">
+      <div class="sh-titlebar">
+        <h1>Your shortlist <span id="count" class="dim"></span></h1>
+        <p class="dim">Click a header to sort · drag to reorder · type in the filter row (<code>&gt;800k</code>, <code>4-6</code>, <code>!btr</code>) · double-click or Enter to edit your columns · arrows to move.</p>
+      </div>
+      <div class="sh-scroll">
+        <table id="sheet" class="sheet" tabindex="0">
+          <thead id="thead"></thead>
+          <tbody id="tbody"></tbody>
+          <tfoot id="tfoot"></tfoot>
+        </table>
+      </div>
+      <p id="empty" class="sh-empty dim" hidden>Nothing shortlisted yet. Open a listing on realestate.com.au or domain.com.au and tap "Shortlist this property".</p>
     </main>
+
+    <!-- columns menu -->
+    <div id="cols-menu" class="pop" hidden></div>
+
+    <!-- add / edit a column -->
+    <dialog id="col-dialog" class="dlg">
+      <form method="dialog" id="col-form">
+        <h2 id="col-title">Add a column</h2>
+        <label>Name <input id="col-name" required placeholder="e.g. Yield at my offer" /></label>
+        <label>Type
+          <select id="col-type">
+            <option value="formula">Formula (calculated)</option>
+            <option value="money">Money (you type it)</option>
+            <option value="number">Number (you type it)</option>
+            <option value="text">Text / notes</option>
+          </select>
+        </label>
+        <label id="col-formula-wrap">Formula <input id="col-formula" placeholder="rent * 52 / my_offer * 100" autocomplete="off" /></label>
+        <label id="col-format-wrap">Show as
+          <select id="col-format"><option value="number">Number</option><option value="money">Money</option><option value="pct">Percent</option></select>
+        </label>
+        <p id="col-preview" class="dim"></p>
+        <p class="dim small">Use any column id: <span id="col-ids"></span>. Functions: round(x, d) · min · max · abs · if(cond, a, b).</p>
+        <div class="dlg-actions">
+          <button value="delete" id="col-delete" class="btn danger" type="submit">Delete column</button>
+          <span></span>
+          <button value="cancel" class="btn" type="submit" formnovalidate>Cancel</button>
+          <button value="save" class="btn primary" type="submit">Save</button>
+        </div>
+      </form>
+    </dialog>
+
+    <div id="toast" class="toast" hidden></div>
     <script type="module" src="shortlist.js"></script>
   </body>
 </html>

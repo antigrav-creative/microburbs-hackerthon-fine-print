@@ -1,4 +1,5 @@
 import Icon from '../../icons.jsx';
+import { openPage } from '../../open-page.js';
 
 const k = (n) => `$${Math.round(n / 1000)}K`;
 
@@ -20,7 +21,7 @@ export default function Header({ brief, onBrief, onNew, onClose }) {
         <div className="flex items-center gap-2">
           <button
             title="Open your shortlist"
-            onClick={() => chrome.tabs.create({ url: chrome.runtime.getURL('src/ui/shortlist.html') })}
+            onClick={() => openPage('src/ui/shortlist.html')}
             className="flex items-center gap-1.5 rounded-[8px] border border-night-line bg-transparent px-2.5 py-[7px] text-[12px] text-night-text transition-colors hover:bg-night-line"
           >
             <Icon name="bookmark" size={14} className="text-night-muted" />
@@ -33,7 +34,7 @@ export default function Header({ brief, onBrief, onNew, onClose }) {
           >
             New
           </button>
-          <button title="Keys and settings" aria-label="Settings" onClick={() => chrome.runtime.openOptionsPage()} className={iconBtn}>
+          <button title="Keys and settings" aria-label="Settings" onClick={() => openPage('options.html')} className={iconBtn}>
             <Icon name="settings-2" size={18} />
           </button>
           <button title="Hide" aria-label="Hide" onClick={onClose} className={iconBtn}>
