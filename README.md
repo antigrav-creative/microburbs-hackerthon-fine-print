@@ -130,7 +130,7 @@ More detail on the agent runtime and code layout: [`extension/README.md`](extens
 |---|---|
 | `extension/` | The Chrome extension (MV3): panel, agent, shortlist, settings |
 | `address-pipeline/` | Address parsing and exact GNAF matching |
-| `pitch/` | Pitch script, demo run order, business case · [slide deck](pitch/deck/index.html) |
+| `pitch/` | [45-second pitch video](pitch/45s.mp4) · pitch script, demo run order, business case · [slide deck](pitch/deck/index.html) |
 | `docs/` | [Rent model report](docs/rent-model-report.html) (Task 4): method, validation, what drives the prediction |
 | `design/` | Design references |
 

@@ -4,6 +4,8 @@ Two parts: a **45-second team pitch** (just us talking, no screen) and a **short
 
 ---
 
+**Recorded:** [`45s.mp4`](45s.mp4) (39 s).
+
 ## Part 1 · 45-second pitch (~120 words)
 
 Problem → product → business. One idea per speaker; speak slower than feels natural. Slides follow along (deck slides 1–7, notes carry these lines), but the pitch works with no screen at all.
