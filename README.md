@@ -18,7 +18,8 @@
 ![Vite](https://img.shields.io/badge/Vite-rolldown-646CFF?logo=vite&logoColor=white)
 ![DeepSeek V4.1 Flash](https://img.shields.io/badge/Model-DeepSeek_V4.1_Flash-4D6BFE)
 ![OpenRouter](https://img.shields.io/badge/via-OpenRouter-6566F1)
-![Tests](https://img.shields.io/badge/tests-85_passing-2ea44f)
+![Tests](https://img.shields.io/badge/tests-93_passing-2ea44f)
+![Rent model](https://img.shields.io/badge/Rent_model-%2442%2Fwk_typical_miss-2f64d9)
 ![Coverage area](https://img.shields.io/badge/Data-City_of_Sydney-8c877d)
 
 **Press `F` on any listing.**
@@ -32,11 +33,12 @@
 | | |
 |---|---|
 | 💸 **Real price** | Likely sale from the agency's record of over/under-quoting, not the guide |
-| 📆 **Weekly cost** | Rent from similar homes within 1 km, yield, and what you're out of pocket |
+| 🔮 **Rent prediction** | Our own model prices every City of Sydney apartment, with and without a car space ($42/wk typical miss) |
+| 📆 **Weekly cost** | Yield and what you're out of pocket each week, from the predicted rent |
 | 🏗️ **Supply timing** | New homes and build-to-rent within 1 km, timed against your hold |
 | ⚠️ **Hazards** | Flood, heritage, bushfire, power lines, public housing in the building |
 | 🤖 **Your analyst** | Ask anything, get a short answer and a visual card |
-| 📊 **Shortlist** | A spreadsheet of everything you've saved, with your own formulas |
+| 📊 **Shortlist** | A spreadsheet of everything you've saved, incl. model rent, with your own formulas |
 
 ## The problem
 
@@ -59,7 +61,9 @@ Open any REA or Domain listing and press **F**. A panel slides in beside the lis
 
 ### On every listing
 - **What you'll really pay:** a likely sale price based on the agency's record of selling over or under its quotes, plus the estimated value, asking price and your budget on one gauge.
-- **What it costs you each week:** rent from similar homes within 1 km, gross yield, and your out-of-pocket weekly cost against your deposit.
+- **What it should rent for:** our own rent model (LightGBM + CatBoost) predicts this exact apartment's weekly rent, with and without a car space, so you see what parking is worth. It priced all 65,777 City of Sydney apartments and misses by **$42 a week** typically, about half the Microburbs benchmark's $86 ([report](docs/rent-model-report.html)). Where it doesn't cover a property, the median of similar rentals within 1 km is used.
+- **What it costs you each week:** gross yield and your out-of-pocket weekly cost against your deposit, worked out from that rent.
+- **Rental listings too:** on a for-rent listing, see the asking rent against the model's prediction.
 - **When supply lands:** new homes and build-to-rent within 1 km, timed against the years of your hold ("build-to-rent wave around 2031, year 6 of 10").
 - **What the listing doesn't say:** tappable signals for supply, timing, agency quoting, value vs asking, rent and hazards.
 - **Hazards and public housing:** flood, heritage, bushfire and power lines, plus public housing in the same building or nearby (City of Sydney list).
