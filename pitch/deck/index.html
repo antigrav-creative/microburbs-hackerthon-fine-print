@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fine Print — Microburbs AI Hackathon</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 32px 16px 64px; background: #e9e6df; font-family: 'Geist', Arial, sans-serif; color: #1E1D1B; }
+  h1 { max-width: 1200px; margin: 0 auto 8px; font: 400 40px 'Instrument Serif', Georgia, serif; }
+  .intro { max-width: 1200px; margin: 0 auto 28px; color: #4A4741; }
+  .frame { max-width: 1200px; margin: 0 auto; aspect-ratio: 16 / 9; position: relative; overflow: hidden; border-radius: 12px; box-shadow: 0 12px 40px rgba(60,48,28,.18); container-type: inline-size; }
+  .scale { position: absolute; inset: 0 auto auto 0; width: 1920px; height: 1080px; transform-origin: 0 0; transform: scale(calc(100cqw / 1920px)); }
+  .slide { position: relative; width: 1920px; height: 1080px; }
+  .slide h1, .slide h2, .slide h3, .slide p { margin: 0; }
+  .notes { max-width: 1200px; margin: 12px auto 40px; font-size: 14px; line-height: 1.5; color: #6B665D; }
+</style>
+<script>/* fallback when the browser can't divide lengths in calc(): scale with JS */
+addEventListener('load', () => { const fit = () => document.querySelectorAll('.frame').forEach((f) => { f.firstElementChild.style.transform = `scale(${f.clientWidth / 1920})`; }); fit(); addEventListener('resize', fit); });
+</script></head>
+<body>
+<h1>Fine Print — pitch deck</h1>
+<p class="intro">Microburbs AI Hackathon 2026 · Task 3. 9 slides; speaker notes under each. Screenshots are public Reddit posts (7 Nov 2026).</p>
+<div class="frame" id="slide-1"><div class="scale"><section class="slide" id="cover" data-transition="fade" style="background:#FBFAF6;color:#1E1D1B;font-family:'Geist', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:space-between;gap:48px">
+<div style="display:flex;flex-direction:row;align-items:center;gap:24px">
+<div style="width:72px;height:72px;background:#1E1D1B;border-radius:18px;display:flex;align-items:center;justify-content:center">
+<svg aria-label="Fine Print logo mark" width="12" height="12" viewBox="0 0 12 12" style="width:32px;height:32px"><path d="M2 9.5V2.5h8M2 6h5" fill="none" stroke="#FBFAF6" stroke-width="1.6" stroke-linecap="round"/></svg>
+</div>
+<p style="font-size:44px;font-weight:600;line-height:1.1">Fine Print</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:40px">
+<h1 style="font-family:'Instrument Serif', Georgia, serif;font-size:120px;font-weight:400;line-height:1.05;letter-spacing:-1px">Read it before you buy it.</h1>
+<p style="font-size:44px;line-height:1.3;color:#4A4741;width:1300px">Your intelligent investment analyst, on every realestate.com.au and Domain listing. Powered by Microburbs.</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6B665D">Microburbs AI Hackathon · Task 3 · 7 November 2026</p>
+
+</section>
+</div></div>
+<p class="notes"><b>1 · cover</b> — Team pitch, 45 seconds, then the live demo.</p>
+<div class="frame" id="slide-2"><div class="scale"><section class="slide" id="two-ways" data-transition="fade" style="background:#FBFAF6;color:#1E1D1B;font-family:'Geist', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:56px">
+<h2 style="font-family:'Instrument Serif', Georgia, serif;font-size:72px;font-weight:400;line-height:1.1">Buying an investment property today, you’ve got two options</h2>
+<div style="display:flex;flex-direction:row;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FFFFFF;border:1px solid #E2DDD2;border-radius:24px;padding:48px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#2F64D9">1 · Gut feel</p>
+<h3 style="font-size:44px;font-weight:600;line-height:1.2">Scroll REA and Domain. Trust the selling agent.</h3>
+<p style="font-size:32px;line-height:1.4;color:#4A4741">Your only evidence is what the agent tells you, and they want you to buy it.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FFFFFF;border:1px solid #E2DDD2;border-radius:24px;padding:48px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#2F64D9">2 · Super-user</p>
+<h3 style="font-size:44px;font-weight:600;line-height:1.2">A spreadsheet and five different websites.</h3>
+<p style="font-size:32px;line-height:1.4;color:#4A4741">RP Data for rents, risk overlays from one site, development applications from another.</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:row;align-items:center;gap:24px">
+<div style="width:8px;height:56px;background:#E3A008;border-radius:4px"></div>
+<p style="font-size:44px;font-weight:500;line-height:1.2">Either way, you’re not making an informed decision, quickly.</p>
+</div>
+
+</section>
+</div></div>
+<p class="notes"><b>2 · two-ways</b> — Jake: If you’re buying an investment property today, you’ve got two options. One: gut feel. You scroll REA and Domain, find something you like, and your only evidence is what the selling agent tells you — and they want you to buy it. Two: you become a super-user. A spreadsheet, RP Data for rent estimates, risk overlays from one site, development applications from another. Either way, you’re not making an informed decision, quickly.</p>
+<div class="frame" id="slide-3"><div class="scale"><section class="slide" id="overpaying" data-transition="fade" style="background:#F1EEE7;color:#1E1D1B;font-family:'Geist', Arial, sans-serif;padding:128px 128px 160px;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center">
+<div style="display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#2F64D9">What investors say</p>
+<h2 style="font-family:'Instrument Serif', Georgia, serif;font-size:72px;font-weight:400;line-height:1.1">“The hardest part is knowing whether you’re overpaying.”</h2>
+<p style="font-size:32px;line-height:1.4;color:#4A4741">And they’re right to worry: Sydney homes that beat their price guide sold a median <b style="color:#9A6A00">$117,500 over the top of it</b>.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:20px;background:#121212;border-radius:24px;padding:40px">
+<img src="img/reddit-overpaying.png" alt="Reddit comment: the hardest part is knowing whether you're overpaying; price guides are often underquoted; compare price per square metre and where suburbs sit in their cycle" style="width:712px;height:269px;object-fit:contain">
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6B665D">Sources: an Australian property investor on Reddit (screenshot, 7 Nov 2026) · Homer data via Mortgage Professional Australia, May 2026</p>
+
+</section>
+</div></div>
+<p class="notes"><b>3 · overpaying</b> — A real investor, in their own words. Price guides are underquoted, so the listing can’t tell you what you’ll really pay.</p>
+<div class="frame" id="slide-4"><div class="scale"><section class="slide" id="super-user" data-transition="fade" style="background:#FBFAF6;color:#1E1D1B;font-family:'Geist', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-family:'Instrument Serif', Georgia, serif;font-size:72px;font-weight:400;line-height:1.1">Serious investors shop for five platforms</h2>
+<div style="display:flex;flex-direction:row;gap:56px;align-items:start">
+<div style="display:flex;background:#121212;border-radius:24px;padding:24px">
+<img src="img/reddit-platforms.png" alt="r/AusFinance post: Best property data platform for a serious first IP? Comparing PriceFinder, Real Estate Investar, DSR Data, PropertyValue and OnTheHouse; goals include identifying high-demand low-supply suburbs, assessing fair value and avoiding overpaying at auction" style="width:560px;height:572px;object-fit:contain">
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;background:#121212;border-radius:24px;padding:24px">
+<img src="img/reddit-tools.png" alt="r/AusPropertyChat post: What free online tools do you use to assess property? The poster wants resources for an informed decision" style="width:952px;height:258px;object-fit:contain">
+</div>
+<h3 style="font-family:'Instrument Serif', Georgia, serif;font-size:44px;font-weight:400;line-height:1.2">“I don’t want to waste money on overlapping platforms that don’t add much.”</h3>
+<p style="font-size:32px;line-height:1.4;color:#4A4741">Their goals: spot <b>low-supply suburbs</b> early, judge <b>fair value</b>, and <b>avoid overpaying</b> at auction.</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6B665D">Sources: r/AusFinance and r/AusPropertyChat posts (screenshots, 7 Nov 2026)</p>
+
+</section>
+</div></div>
+<p class="notes"><b>4 · super-user</b> — This is the super-user path. A first-time Sydney investor with a one-to-one-point-two million budget, choosing between PriceFinder, Real Estate Investar, DSR Data, PropertyValue and OnTheHouse. Three of their goals are exactly what Fine Print shows on the listing.</p>
+<div class="frame" id="slide-5"><div class="scale"><section class="slide" id="fine-print" data-transition="fade" style="background:#FBFAF6;color:#1E1D1B;font-family:'Geist', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-family:'Instrument Serif', Georgia, serif;font-size:72px;font-weight:400;line-height:1.1">Fine Print reads the listing for you</h2>
+<div style="display:flex;flex-direction:row;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FFFFFF;border:1px solid #E2DDD2;border-radius:24px;padding:40px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#2F64D9">Price</p>
+<h3 style="font-size:44px;font-weight:600;line-height:1.2">What you’ll really pay</h3>
+<p style="font-size:32px;line-height:1.4;color:#4A4741">The likely sale price, from the agency’s record of selling over or under its quotes.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FFFFFF;border:1px solid #E2DDD2;border-radius:24px;padding:40px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#2F64D9">Cost</p>
+<h3 style="font-size:44px;font-weight:600;line-height:1.2">What it costs you each week</h3>
+<p style="font-size:32px;line-height:1.4;color:#4A4741">Rent from similar homes within 1 km, yield, and your out-of-pocket cost against your brief.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FFFFFF;border:1px solid #E2DDD2;border-radius:24px;padding:40px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#9A6A00">Supply</p>
+<h3 style="font-size:44px;font-weight:600;line-height:1.2">When new homes land</h3>
+<p style="font-size:32px;line-height:1.4;color:#4A4741">New homes and build-to-rent within 1 km, timed against the years of your hold.</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:row;gap:24px">
+<p style="font-size:32px;line-height:1.3;background:#E9EEFB;color:#1E1D1B;padding:16px 28px;border-radius:999px">+ Your own intelligent investment analyst</p>
+<p style="font-size:32px;line-height:1.3;background:#E9EEFB;color:#1E1D1B;padding:16px 28px;border-radius:999px">+ A shortlist to decide from</p>
+</div>
+
+</section>
+</div></div>
+<p class="notes"><b>5 · fine-print</b> — Carlos: Fine Print puts that research on the listing itself, on REA and Domain: the real price, rent, weekly cost, risks and incoming supply, from Microburbs data. Yong: And it’s your own intelligent investment analyst. It knows your brief, answers your questions, and builds a shortlist you can actually decide from.</p>
+<div class="frame" id="slide-6"><div class="scale"><section class="slide" id="demo" data-transition="fade" style="background:#2F64D9;color:#FBFAF6;font-family:'Geist', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:center;gap:40px">
+<h1 style="font-family:'Instrument Serif', Georgia, serif;font-size:120px;font-weight:400;line-height:1.05;color:#FBFAF6">Press F.</h1>
+<p style="font-size:44px;line-height:1.3;width:1400px;color:#FBFAF6">Live: a real REA listing, the organisers’ Waterloo example on Domain, then the shortlist.</p>
+
+</section>
+</div></div>
+<p class="notes"><b>6 · demo</b> — Demo, about 90 seconds. 1. Press F on the REA listing. 2. The real price from the agency’s quoting record. 3. Rent, yield and weekly cost. 4. When supply lands in the hold. 5. Ask the analyst a question. 6. Switch to the Waterloo example on Domain. 7. Click the toolbar icon for the shortlist spreadsheet.</p>
+<div class="frame" id="slide-7"><div class="scale"><section class="slide" id="take-up" data-transition="fade" style="background:#F1EEE7;color:#1E1D1B;font-family:'Geist', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-family:'Instrument Serif', Georgia, serif;font-size:72px;font-weight:400;line-height:1.1">Built to be taken up</h2>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:80px">
+<div style="display:flex;flex-direction:column;gap:36px">
+<div style="display:flex;flex-direction:row;gap:24px;align-items:start">
+<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2F64D9" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M20 6 9 17l-5-5"/></svg>
+<div style="display:flex;flex-direction:column;gap:8px"><h3 style="font-size:44px;font-weight:600;line-height:1.2">No sign-up</h3><p style="font-size:32px;line-height:1.4;color:#4A4741">Install, set your brief once, done.</p></div>
+</div>
+<div style="display:flex;flex-direction:row;gap:24px;align-items:start">
+<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2F64D9" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M20 6 9 17l-5-5"/></svg>
+<div style="display:flex;flex-direction:column;gap:8px"><h3 style="font-size:44px;font-weight:600;line-height:1.2">Both portals</h3><p style="font-size:32px;line-height:1.4;color:#4A4741">realestate.com.au and Domain.</p></div>
+</div>
+<div style="display:flex;flex-direction:row;gap:24px;align-items:start">
+<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2F64D9" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M20 6 9 17l-5-5"/></svg>
+<div style="display:flex;flex-direction:column;gap:8px"><h3 style="font-size:44px;font-weight:600;line-height:1.2">One key</h3><p style="font-size:32px;line-height:1.4;color:#4A4741">Press F on any listing. The shortlist brings you back.</p></div>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-family:'Instrument Serif', Georgia, serif;font-size:120px;line-height:1;color:#2F64D9">13M</p>
+<p style="font-size:32px;line-height:1.4;color:#4A4741">Australians on realestate.com.au every month</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-family:'Instrument Serif', Georgia, serif;font-size:120px;line-height:1;color:#9A6A00">~10K</p>
+<p style="font-size:32px;line-height:1.4;color:#4A4741">users for the most popular listing extension today</p>
+</div>
+</div>
+</div>
+<p style="font-size:32px;font-weight:600;line-height:1.3">For Microburbs: your data, at the moment of decision.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6B665D">Sources: REA / Ipsos iris, Oct 2025 · Chrome Web Store (Homer), 7 Nov 2026</p>
+
+</section>
+</div></div>
+<p class="notes"><b>7 · take-up</b> — Yong: No sign-up, both portals, one key. Fine Print: read it before you buy it. Business case if asked: Fine Print is distribution for Microburbs data, right where the investor decides.</p>
+<div class="frame" id="slide-8"><div class="scale"><section class="slide" id="business" data-transition="fade" style="background:#FBFAF6;color:#1E1D1B;font-family:'Geist', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-family:'Instrument Serif', Georgia, serif;font-size:72px;font-weight:400;line-height:1.1">The business case</h2>
+<div style="display:flex;flex-direction:row;gap:32px;align-items:start">
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FFFFFF;border:1px solid #E2DDD2;border-radius:24px;padding:40px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#2F64D9">1 · Investor subscription</p>
+<h3 style="font-size:44px;font-weight:600;line-height:1.2">Free to read. Paid for power users.</h3>
+<div style="display:flex;flex-direction:row;gap:24px;align-items:center">
+<p style="font-family:'Instrument Serif', Georgia, serif;font-size:56px;line-height:1;width:220px;color:#2F64D9">$420M</p>
+<p style="flex:1;font-size:28px;line-height:1.35;color:#4A4741"><b>TAM</b> · 2.34M Australians who own a rental</p>
+</div>
+<div style="display:flex;flex-direction:row;gap:24px;align-items:center">
+<p style="font-family:'Instrument Serif', Georgia, serif;font-size:56px;line-height:1;width:220px;color:#2F64D9">$38M</p>
+<p style="flex:1;font-size:28px;line-height:1.35;color:#4A4741"><b>SAM</b> · ~210K new investor loans a year</p>
+</div>
+<div style="display:flex;flex-direction:row;gap:24px;align-items:center">
+<p style="font-family:'Instrument Serif', Georgia, serif;font-size:56px;line-height:1;width:220px;color:#2F64D9">$4.2M</p>
+<p style="flex:1;font-size:28px;line-height:1.35;color:#4A4741"><b>SOM</b> · 1% of landlords, ~2× today’s leading extension</p>
+</div>
+<p style="font-size:24px;line-height:1.4;color:#6B665D">At an illustrative $15 a month. Comparable tools charge $10–$320 a month; pricing is still to be tested.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FFFFFF;border:1px solid #E2DDD2;border-radius:24px;padding:40px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#9A6A00">2 · At critical mass</p>
+<h3 style="font-size:44px;font-weight:600;line-height:1.2">Demand insights for developers</h3>
+<p style="font-size:32px;line-height:1.4;color:#4A4741">Every read and shortlist is a live signal of what investors want: which suburbs, how many bedrooms, at what price.</p>
+<p style="font-size:32px;line-height:1.4;color:#4A4741">Aggregated and opt-in, that’s demand data developers and build-to-rent operators can use <b>before they build</b>.</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6B665D">Sources: ATO Taxation Statistics 2023–24 · ABS Lending Indicators, June qtr 2026 (52.6K loans × 4) · Chrome Web Store, 7 Nov 2026</p>
+
+</section>
+</div></div>
+<p class="notes"><b>8 · business</b> — Two ways it makes money. One: an investor subscription — free to read a listing, paid for power users. 2.3 million Australians own a rental; at an illustrative fifteen dollars a month that’s a four-hundred-million-dollar total market. One percent of landlords is about twice today’s leading extension and about four million a year. Pricing is still to be tested. Two: once we hit critical mass, every read and shortlist is live demand data — which suburbs, bedrooms and price points investors want. Aggregated and opt-in, that’s valuable to developers and build-to-rent operators before they build.</p>
+<div class="frame" id="slide-9"><div class="scale"><section class="slide" id="close" data-transition="fade" style="background:#1E1D1B;color:#FBFAF6;font-family:'Geist', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:center;gap:32px">
+<h1 style="font-family:'Instrument Serif', Georgia, serif;font-size:120px;font-weight:400;line-height:1.05;color:#FBFAF6">Fine Print.</h1>
+<h2 style="font-family:'Instrument Serif', Georgia, serif;font-size:72px;font-weight:400;font-style:italic;line-height:1.1;color:#9DB4EE">Read it before you buy it.</h2>
+<p style="font-size:32px;line-height:1.4;color:#BFB9AC;width:1300px">Load the extension, paste two keys, set your brief, and press F on any REA or Domain listing.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#A39E93">Data by Microburbs · general information, not financial advice</p>
+
+</section>
+</div></div>
+<p class="notes"><b>9 · close</b> — Close and hand over to questions.</p>
+</body></html>
